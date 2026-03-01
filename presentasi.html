@@ -1,19 +1,166 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentasi</title>
+    <title>Moklet Leadership</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 3px solid #e63946;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: #ffffff;
+        }
+
+        header h1 span {
+            color: #e63946;
+        }
+
+        header p {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #a0b0c0;
+        }
+
         .slide {
+            max-width: 960px;
+            margin: 40px auto;
+            padding: 0 20px;
             overflow-y: auto;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.4rem;
+            color: #e63946;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 8px;
+        }
+
+        .card p {
+            line-height: 1.7;
+            color: #c9d1d9;
+        }
+
+        .vision-mission ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .vision-mission ul li {
+            padding: 8px 0 8px 20px;
+            border-left: 3px solid #e63946;
+            margin-bottom: 10px;
+            color: #c9d1d9;
+            line-height: 1.6;
+        }
+
+        .structure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .member-card {
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .member-card .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e63946, #0f3460);
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .member-card .name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #e6edf3;
+        }
+
+        .member-card .role {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 4px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            padding: 20px;
+        }
+
+        .navigation a {
+            padding: 10px 24px;
+            background: #e63946;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .navigation a:hover {
+            background: #c1121f;
+        }
+
+        .slide-counter {
+            text-align: center;
+            color: #8b949e;
+            font-size: 0.85rem;
+            padding-bottom: 30px;
         }
 
         @media (max-width: 768px) {
             .slide {
                 padding: 10px;
                 font-size: 14px;
-                /* Adjust other properties as needed */
+            }
+
+            header h1 {
+                font-size: 1.8rem;
             }
         }
 
@@ -21,22 +168,88 @@
             .slide {
                 padding: 5px;
                 font-size: 12px;
-                /* Adjust other properties as needed */
             }
         }
-
-        /* Add any other CSS adjustments as necessary */
     </style>
 </head>
 <body>
+    <header>
+        <h1>Moklet <span>Leadership</span></h1>
+        <p>SMK Telkom Malang &mdash; Organisasi Kepemimpinan Siswa</p>
+    </header>
+
     <div class="slide">
-        <!-- Slide content goes here -->
+        <div class="card">
+            <h2>Tentang Kami</h2>
+            <p>
+                Moklet Leadership adalah wadah pengembangan jiwa kepemimpinan bagi siswa-siswi
+                SMK Telkom Malang. Kami berkomitmen untuk mencetak pemimpin muda yang berintegritas,
+                inovatif, dan berdedikasi dalam memajukan sekolah dan masyarakat.
+            </p>
+        </div>
+
+        <div class="card vision-mission">
+            <h2>Visi</h2>
+            <p>
+                Menjadi organisasi kepemimpinan siswa yang unggul, profesional, dan berdampak
+                positif bagi lingkungan sekolah dan masyarakat luas.
+            </p>
+        </div>
+
+        <div class="card vision-mission">
+            <h2>Misi</h2>
+            <ul>
+                <li>Mengembangkan potensi kepemimpinan setiap anggota melalui pelatihan dan kegiatan nyata.</li>
+                <li>Membangun budaya kolaborasi, inovasi, dan tanggung jawab di lingkungan sekolah.</li>
+                <li>Menjadi jembatan aspirasi siswa kepada pihak sekolah.</li>
+                <li>Menyelenggarakan kegiatan yang bermanfaat bagi seluruh warga sekolah.</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>Struktur Organisasi</h2>
+            <div class="structure-grid">
+                <div class="member-card">
+                    <div class="avatar">K</div>
+                    <div class="name">Ketua</div>
+                    <div class="role">Pemimpin Organisasi</div>
+                </div>
+                <div class="member-card">
+                    <div class="avatar">W</div>
+                    <div class="name">Wakil Ketua</div>
+                    <div class="role">Pendamping Ketua</div>
+                </div>
+                <div class="member-card">
+                    <div class="avatar">S</div>
+                    <div class="name">Sekretaris</div>
+                    <div class="role">Administrasi</div>
+                </div>
+                <div class="member-card">
+                    <div class="avatar">B</div>
+                    <div class="name">Bendahara</div>
+                    <div class="role">Keuangan</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Program Kerja</h2>
+            <ul style="list-style: disc; padding-left: 20px; color: #c9d1d9; line-height: 2;">
+                <li>Pelatihan Kepemimpinan Dasar</li>
+                <li>Leadership Camp</li>
+                <li>Bakti Sosial &amp; Pengabdian Masyarakat</li>
+                <li>Seminar dan Workshop Pengembangan Diri</li>
+                <li>Kegiatan Ekstrakurikuler dan Kompetisi</li>
+            </ul>
+        </div>
     </div>
+
     <div class="navigation">
-        <!-- Navigation elements go here -->
+        <a href="index.html">Beranda</a>
     </div>
+
     <div class="slide-counter">
-        <!-- Slide counter goes here -->
+        &copy; 2024 Moklet Leadership &mdash; SMK Telkom Malang
     </div>
 </body>
 </html>
