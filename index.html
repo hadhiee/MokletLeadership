@@ -1,16 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0; url=presentasi.html">
-    <title>Redirecting...</title>
-    <script>
-        // Fallback for browsers that do not support meta refresh
-        location.replace('presentasi.html');
-    </script>
+    <title>Moklet Leadership</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+        }
+
+        .container {
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 600px;
+        }
+
+        .logo {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            color: #e94560;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #a8b2d8;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .description {
+            font-size: 1rem;
+            color: #ccd6f6;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 14px 40px;
+            background: #e94560;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .btn:hover {
+            background: #c73652;
+            transform: translateY(-2px);
+        }
+    </style>
 </head>
 <body>
-    <p>If you are not redirected, <a href="presentasi.html">click here</a>.</p>
+    <div class="container">
+        <div class="logo">🏆</div>
+        <h1>Moklet Leadership</h1>
+        <p class="subtitle">Asah Kepemimpinan</p>
+        <p class="description">
+            Selamat datang di program Moklet Leadership.<br>
+            Tingkatkan kemampuan kepemimpinan dan raih potensi terbaikmu.
+        </p>
+        <a href="presentasi.html" class="btn">Mulai Presentasi</a>
+    </div>
 </body>
 </html>
