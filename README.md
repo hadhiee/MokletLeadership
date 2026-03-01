@@ -1,51 +1,74 @@
-# Moklet Leadership 🎯
+# Moklet Leadership: Sadari, Peduli, Berani
 
-**Asah Kepemimpinan Anda**
+Materi ini dirancang untuk membentuk karakter kepemimpinan siswa melalui tiga pilar utama:
 
-Program Pengembangan Kepemimpinan yang dirancang untuk mengembangkan pemimpin masa depan yang inspiratif, inovatif, dan berdampak positif.
+- Sadari
+- Peduli
+- Berani
 
-## 🌟 Visi Kami
+Ketiganya menjadi fondasi agar kepemimpinan tidak hanya terlihat saat memimpin, tetapi juga terasa dalam sikap sehari-hari.
 
-Mengembangkan pemimpin masa depan yang **inspiratif**, **inovatif**, dan **berdampak positif** bagi lingkungan sekitar.
+## 1) Sadari
 
-## Prinsip Kepemimpinan
+Sadari berarti mengenali diri sendiri sebelum mengarahkan orang lain.
 
-- ✓ Integritas dan Kejujuran
-- ✓ Visi yang Jelas
-- ✓ Komunikasi Efektif
-- ✓ Kemampuan Delegasi
-- ✓ Empati dan Kepedulian
+Fokus pembahasan:
 
-## Keterampilan yang Dikembangkan
+- Mengenali kekuatan dan area yang perlu ditingkatkan
+- Mengelola emosi saat menghadapi tekanan
+- Memahami nilai pribadi sebagai dasar pengambilan keputusan
+- Belajar refleksi dari pengalaman
 
-- ✓ Public Speaking
-- ✓ Problem Solving
-- ✓ Team Building
-- ✓ Decision Making
-- ✓ Conflict Resolution
+Hasil yang diharapkan:
 
-## 📚 Metode Pembelajaran
+- Lebih percaya diri karena paham potensi diri
+- Tidak mudah reaktif dalam konflik
+- Memiliki arah pengembangan diri yang jelas
 
-- ✓ Workshop Interaktif
-- ✓ Studi Kasus
-- ✓ Role Playing
-- ✓ Mentoring
-- ✓ Project-Based Learning
+## 2) Peduli
 
-## Manfaat Program
+Peduli berarti mampu melihat, mendengar, dan merespons kebutuhan orang lain serta lingkungan.
 
-- ✓ Meningkatkan Kepercayaan Diri
-- ✓ Mengasah Kemampuan Berpikir Strategis
-- ✓ Membangun Jaringan
-- ✓ Mendapatkan Sertifikat
-- ✓ Pengalaman Praktis
+Fokus pembahasan:
 
-## 🚀 Mulai Perjalanan Anda
+- Empati dalam komunikasi dan kerja tim
+- Membangun kebiasaan saling menghargai
+- Menumbuhkan tanggung jawab sosial
+- Menjadi teladan dalam budaya kolaboratif
 
-Jadilah pemimpin yang Anda inginkan! Bergabunglah dengan **Moklet Leadership** dan wujudkan potensi kepemimpinan Anda.
+Hasil yang diharapkan:
 
----
+- Hubungan tim lebih sehat dan produktif
+- Lingkungan belajar yang aman dan suportif
+- Meningkatnya rasa memiliki terhadap komunitas
+
+## 3) Berani
+
+Berani berarti berani melangkah, berpendapat, dan bertanggung jawab atas keputusan.
+
+Fokus pembahasan:
+
+- Berani menyampaikan ide dengan jelas
+- Berani mengambil keputusan berbasis nilai
+- Berani menghadapi tantangan dan perubahan
+- Berani mengakui kesalahan lalu memperbaiki
+
+Hasil yang diharapkan:
+
+- Muncul inisiatif dan kepemimpinan nyata
+- Keputusan lebih tegas dan terukur
+- Tumbuh mental pembelajar yang tangguh
+
+## Alur Penerapan di Sekolah
+
+1. Sadari diri: mulai dari refleksi dan target pribadi
+2. Peduli sekitar: praktik empati di kelas, organisasi, dan proyek
+3. Berani bertindak: ambil peran, eksekusi ide, evaluasi hasil
+
+## Penutup
+
+Pemimpin yang kuat dimulai dari kesadaran diri, tumbuh lewat kepedulian, dan diwujudkan melalui keberanian.
 
 ## Presentasi
 
-Untuk melihat presentasi lengkap program ini, buka file [`presentasi.html`](presentasi.html) di browser Anda. Presentasi interaktif ini mencakup semua informasi tentang program dengan navigasi yang mudah digunakan.
+Materi visual dapat dilihat di [presentasi.html](presentasi.html).
