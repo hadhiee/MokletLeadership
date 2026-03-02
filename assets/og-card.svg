@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#667eea" />
+      <stop offset="100%" stop-color="#764ba2" />
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feOffset dx="0" dy="12" in="SourceAlpha" result="off" />
+      <feGaussianBlur in="off" stdDeviation="24" result="blur" />
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0   0 0 0 0.25 0" result="shadow" />
+      <feBlend in="SourceGraphic" in2="shadow" mode="normal" />
+    </filter>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <g filter="url(#shadow)">
+    <rect x="120" y="120" width="960" height="390" rx="48" fill="#ffffff" opacity="0.94" />
+  </g>
+  <text x="600" y="260" text-anchor="middle" fill="#1f2937" font-family="'Segoe UI', Arial, sans-serif" font-size="68" font-weight="700">Moklet Leadership</text>
+  <text x="600" y="330" text-anchor="middle" fill="#5b21b6" font-family="'Segoe UI', Arial, sans-serif" font-size="46" font-weight="600">Sadari · Peduli · Berani</text>
+  <text x="600" y="400" text-anchor="middle" fill="#4b5563" font-family="'Segoe UI', Arial, sans-serif" font-size="32">Modul Leadership & Softskill</text>
+</svg>
