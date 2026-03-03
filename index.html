@@ -19,6 +19,7 @@
     <meta name="twitter:image" content="https://hadhiee.github.io/MoLeS/assets/og-card.png">
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
     <title>Moklet Leadership</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -28,50 +29,210 @@
 
         body {
             min-height: 100vh;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', Arial, sans-serif;
             display: grid;
             place-items: center;
-            background: #f5f7fb;
-            color: #1f2937;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            color: #f1f5f9;
             padding: 24px;
+            overflow: hidden;
+            position: relative;
         }
 
+        /* Animated floating orbs */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: .35;
+            z-index: 0;
+            animation: float 8s ease-in-out infinite alternate;
+        }
+        body::before {
+            width: 420px; height: 420px;
+            background: #667eea;
+            top: -120px; left: -100px;
+        }
+        body::after {
+            width: 350px; height: 350px;
+            background: #ec4899;
+            bottom: -100px; right: -80px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%   { transform: translateY(0) scale(1); }
+            100% { transform: translateY(30px) scale(1.05); }
+        }
+
+        /* Hero card */
         .card {
+            position: relative;
+            z-index: 1;
             width: 100%;
-            max-width: 680px;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 28px;
+            max-width: 560px;
+            background: rgba(255,255,255,.07);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid rgba(255,255,255,.12);
+            border-radius: 24px;
+            padding: 48px 36px 42px;
             text-align: center;
+            animation: cardIn .8s cubic-bezier(.22,1,.36,1) both;
         }
 
-        h1 {
-            margin-bottom: 12px;
-            font-size: 28px;
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(40px) scale(.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        p {
-            line-height: 1.6;
+        /* Logo icon */
+        .logo {
+            width: 72px; height: 72px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 18px;
+            display: grid;
+            place-items: center;
+            font-size: 32px;
+            box-shadow: 0 8px 30px rgba(102,126,234,.4);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 8px 30px rgba(102,126,234,.4); }
+            50%      { box-shadow: 0 8px 50px rgba(102,126,234,.65); }
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: rgba(102,126,234,.25);
+            color: #a5b4fc;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 50px;
             margin-bottom: 18px;
         }
 
-        a {
-            display: inline-block;
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 14px;
+            background: linear-gradient(90deg, #fff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            line-height: 1.7;
+            color: rgba(255,255,255,.65);
+            margin-bottom: 10px;
+        }
+
+        /* Three pillars */
+        .pillars {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 22px 0 30px;
+            flex-wrap: wrap;
+        }
+        .pillar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.1);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #e2e8f0;
+            transition: background .25s;
+        }
+        .pillar:hover {
+            background: rgba(255,255,255,.15);
+        }
+        .pillar span.icon {
+            font-size: 16px;
+        }
+
+        /* CTA button */
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             text-decoration: none;
-            background: #2563eb;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #fff;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 600;
+            padding: 14px 32px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            text-transform: uppercase;
+            box-shadow: 0 6px 28px rgba(102,126,234,.45);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 36px rgba(102,126,234,.6);
+        }
+        .cta:active {
+            transform: translateY(0);
+        }
+        .cta svg {
+            width: 18px; height: 18px;
+            fill: currentColor;
+            transition: transform .2s;
+        }
+        .cta:hover svg {
+            transform: translateX(3px);
+        }
+
+        /* Footer note */
+        .footer {
+            margin-top: 28px;
+            font-size: 12px;
+            color: rgba(255,255,255,.35);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .card { padding: 36px 22px 32px; }
+            h1 { font-size: 26px; }
+            .cta { padding: 13px 24px; font-size: 14px; }
         }
     </style>
 </head>
 <body>
     <main class="card">
+        <div class="logo">🎓</div>
+        <span class="badge">Leadership &amp; Softskill</span>
         <h1>Moklet Leadership</h1>
-        <p>Selamat datang di web kumpulan modul untuk materi <strong>Leadership</strong> dan <strong>Softskill</strong> siswa Moklet. Materi disusun ringkas, praktis, dan siap dipelajari kapan saja.</p>
-        <a href="presentasi.html">Buka Materi Presentasi</a>
+        <p class="subtitle">Selamat datang di web kumpulan modul <strong style="color:#a5b4fc">Leadership</strong> dan <strong style="color:#c4b5fd">Softskill</strong> siswa Moklet. Materi disusun ringkas, praktis, dan siap dipelajari kapan saja.</p>
+
+        <div class="pillars">
+            <div class="pillar"><span class="icon">💡</span> Sadari</div>
+            <div class="pillar"><span class="icon">🤝</span> Peduli</div>
+            <div class="pillar"><span class="icon">🔥</span> Berani</div>
+        </div>
+
+        <a class="cta" href="presentasi.html">
+            BUKA MATERI
+            <svg viewBox="0 0 20 20"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
+        </a>
+
+        <p class="footer">© 2026 Moklet Leadership</p>
     </main>
 </body>
 </html>
