@@ -21,19 +21,19 @@
 
         .presentation-container {
             width: 100vw;
-            height: 100vh;
-            height: 100dvh;
+            height: calc(100vh - 80px);
+            height: calc(100dvh - 80px);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 24px 24px calc(110px + env(safe-area-inset-bottom));
+            padding: 24px;
         }
 
         .slide {
             background: #fff;
             width: 100%;
             max-width: 980px;
-            height: min(78dvh, 640px);
+            max-height: 100%;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
             padding: 56px;
@@ -109,21 +109,22 @@
         }
 
         .three-scene {
-            width: 240px;
-            height: 200px;
+            width: 100%;
+            max-width: 380px;
+            height: 250px;
             margin: 0 auto 16px;
             border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            background: linear-gradient(140deg, rgba(102, 126, 234, 0.2), rgba(118, 75, 162, 0.08));
-            backdrop-filter: blur(8px);
-            box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: radial-gradient(ellipse at center, rgba(15, 12, 41, 0.95), rgba(30, 20, 60, 0.98));
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.06);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4f46e5;
+            color: #a5b4fc;
             font-size: 0.85rem;
             text-align: center;
-            padding: 12px;
+            padding: 0;
+            overflow: hidden;
         }
 
         .center-text {
@@ -137,13 +138,15 @@
 
         .navigation {
             position: fixed;
-            bottom: max(16px, env(safe-area-inset-bottom));
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
+            justify-content: center;
             gap: 12px;
-            z-index: 999;
-            width: min(520px, calc(100vw - 24px));
+            z-index: 99999;
+            padding: 14px 24px;
+            background: linear-gradient(to top, rgba(55,40,100,0.95) 60%, transparent);
         }
 
         .nav-button {
@@ -153,11 +156,23 @@
             color: #4f46e5;
             font-size: 1rem;
             font-weight: 700;
-            padding: 10px 18px;
+            padding: 12px 28px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
             white-space: nowrap;
-            flex: 1;
+            min-width: 180px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-button:active:not(:disabled) {
+            transform: translateY(0);
         }
 
         .nav-button:disabled {
@@ -180,13 +195,11 @@
         @media (max-width: 768px) {
             .presentation-container {
                 align-items: flex-start;
-                padding: 14px 12px calc(118px + env(safe-area-inset-bottom));
+                padding: 14px 12px;
             }
 
             .slide {
                 margin-top: 6px;
-                height: auto;
-                max-height: calc(100dvh - 150px - env(safe-area-inset-bottom));
                 padding: 28px 24px;
                 border-radius: 14px;
                 justify-content: flex-start;
@@ -211,21 +224,22 @@
             }
 
             .three-scene {
-                width: 200px;
-                height: 170px;
+                max-width: 320px;
+                height: 210px;
                 margin-bottom: 12px;
                 font-size: 0.78rem;
                 border-radius: 16px;
             }
 
             .navigation {
-                width: calc(100vw - 24px);
                 gap: 10px;
+                padding: 12px 16px;
             }
 
             .nav-button {
                 font-size: 0.98rem;
-                padding: 10px 12px;
+                padding: 10px 16px;
+                min-width: 140px;
             }
 
             .slide-counter {
@@ -239,7 +253,6 @@
         @media (max-width: 420px) {
             .slide {
                 padding: 22px 18px;
-                max-height: calc(100dvh - 145px - env(safe-area-inset-bottom));
             }
 
             h1 {
@@ -256,8 +269,8 @@
             }
 
             .three-scene {
-                width: 180px;
-                height: 150px;
+                max-width: 280px;
+                height: 180px;
                 font-size: 0.72rem;
                 border-radius: 14px;
             }
@@ -346,153 +359,23 @@
 
     <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">7</span></div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Navigation script — independent, loads first -->
     <script>
-        (function initThreeScenes() {
-            const containers = document.querySelectorAll('.three-scene');
-            if (!containers.length) {
-                return;
-            }
-
-            if (!window.THREE) {
-                containers.forEach((container) => {
-                    container.textContent = 'Mode 3D memerlukan dukungan WebGL di browser Anda.';
-                });
-                return;
-            }
-
-            const sceneBuilders = {
-                brain(scene) {
-                    const material = new THREE.MeshStandardMaterial({
-                        color: 0x8c8eff,
-                        roughness: 0.35,
-                        metalness: 0.15,
-                        flatShading: true,
-                    });
-                    const geometry = new THREE.IcosahedronGeometry(1.1, 2);
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.rotation.y = Math.random() * Math.PI;
-                    scene.add(mesh);
-                    addLights(scene);
-                    return { mesh, spin: { x: 0.012, y: 0.018 } };
-                },
-                empathy(scene) {
-                    const geometry = new THREE.TorusKnotGeometry(0.8, 0.22, 120, 18);
-                    const material = new THREE.MeshStandardMaterial({
-                        color: 0xff9ecd,
-                        emissive: 0x330033,
-                        roughness: 0.3,
-                        metalness: 0.6,
-                    });
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.rotation.y = Math.random() * Math.PI;
-                    scene.add(mesh);
-                    addLights(scene);
-                    return { mesh, spin: { x: 0.01, y: 0.024 } };
-                },
-                courage(scene) {
-                    const geometry = new THREE.ConeGeometry(0.85, 1.6, 14);
-                    const material = new THREE.MeshStandardMaterial({
-                        color: 0xffc857,
-                        roughness: 0.2,
-                        metalness: 0.4,
-                    });
-                    const mesh = new THREE.Mesh(geometry, material);
-                    mesh.rotation.set(Math.PI / 4, Math.random() * Math.PI, 0);
-                    scene.add(mesh);
-                    addLights(scene);
-                    return { mesh, spin: { x: 0.016, y: 0.03 } };
-                },
-            };
-
-            const instances = [];
-
-            function addLights(scene) {
-                const key = new THREE.DirectionalLight(0xffffff, 0.8);
-                key.position.set(2, 2, 3);
-                scene.add(key);
-                const fill = new THREE.AmbientLight(0xffffff, 0.5);
-                scene.add(fill);
-            }
-
-            containers.forEach((container) => {
-                const modelKey = container.dataset.model;
-                const builder = sceneBuilders[modelKey];
-                if (!builder) {
-                    return;
-                }
-
-                container.textContent = '';
-
-                const scene = new THREE.Scene();
-                const camera = new THREE.PerspectiveCamera(35, container.clientWidth / container.clientHeight, 0.1, 100);
-                camera.position.set(0, 0, 4);
-
-                const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                renderer.setSize(container.clientWidth, container.clientHeight);
-                renderer.setClearColor(0x000000, 0);
-                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-                container.appendChild(renderer.domElement);
-
-                const buildResult = builder(scene) || {};
-
-                instances.push({
-                    container,
-                    scene,
-                    camera,
-                    renderer,
-                    mesh: buildResult.mesh,
-                    spin: buildResult.spin || { x: 0.01, y: 0.02 },
-                });
-            });
-
-            function animate() {
-                instances.forEach(({ renderer, camera, scene, mesh, spin }) => {
-                    if (mesh && spin) {
-                        mesh.rotation.x += spin.x;
-                        mesh.rotation.y += spin.y;
-                    }
-                    renderer.render(scene, camera);
-                });
-                requestAnimationFrame(animate);
-            }
-
-            function handleResize() {
-                instances.forEach((instance) => {
-                    const { container, renderer, camera } = instance;
-                    const width = container.clientWidth;
-                    const height = container.clientHeight;
-                    if (width === 0 || height === 0) {
-                        return;
-                    }
-                    renderer.setSize(width, height);
-                    camera.aspect = width / height;
-                    camera.updateProjectionMatrix();
-                });
-            }
-
-            window.addEventListener('resize', handleResize);
-            animate();
-        })();
-
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        const totalSlides = slides.length;
-        const currentSlideEl = document.getElementById('currentSlide');
-        const totalSlidesEl = document.getElementById('totalSlides');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
+        var currentSlide = 0;
+        var slides = document.querySelectorAll('.slide');
+        var totalSlides = slides.length;
+        var currentSlideEl = document.getElementById('currentSlide');
+        var totalSlidesEl = document.getElementById('totalSlides');
+        var prevBtn = document.getElementById('prevBtn');
+        var nextBtn = document.getElementById('nextBtn');
 
         totalSlidesEl.textContent = totalSlides;
 
         function showSlide(index) {
-            slides.forEach((slide, slideIndex) => {
+            slides.forEach(function(slide, slideIndex) {
                 slide.classList.toggle('active', slideIndex === index);
-                if (slideIndex === index) {
-                    slide.scrollTop = 0;
-                }
+                if (slideIndex === index) slide.scrollTop = 0;
             });
-
             currentSlideEl.textContent = index + 1;
             prevBtn.disabled = index === 0;
             nextBtn.disabled = index === totalSlides - 1;
@@ -500,24 +383,456 @@
         }
 
         function changeSlide(direction) {
-            const nextIndex = currentSlide + direction;
-            if (nextIndex < 0 || nextIndex >= totalSlides) {
-                return;
-            }
+            var nextIndex = currentSlide + direction;
+            if (nextIndex < 0 || nextIndex >= totalSlides) return;
             currentSlide = nextIndex;
             showSlide(currentSlide);
         }
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowRight') {
-                changeSlide(1);
-            }
-            if (event.key === 'ArrowLeft') {
-                changeSlide(-1);
-            }
+        prevBtn.addEventListener('click', function() { changeSlide(-1); });
+        nextBtn.addEventListener('click', function() { changeSlide(1); });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') changeSlide(1);
+            if (event.key === 'ArrowLeft') changeSlide(-1);
         });
 
+        // Swipe support for touch devices
+        (function() {
+            var startX = 0;
+            var container = document.querySelector('.presentation-container');
+            container.addEventListener('touchstart', function(e) { startX = e.changedTouches[0].screenX; }, { passive: true });
+            container.addEventListener('touchend', function(e) {
+                var diff = e.changedTouches[0].screenX - startX;
+                if (Math.abs(diff) > 50) changeSlide(diff < 0 ? 1 : -1);
+            }, { passive: true });
+        })();
+
         showSlide(currentSlide);
+    </script>
+
+    <!-- Three.js — loaded separately, won't break navigation if it fails -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.1/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        try {
+        (function initThreeScenes() {
+            var containers = document.querySelectorAll('.three-scene');
+            if (!containers.length) return;
+            if (!window.THREE) {
+                containers.forEach(function(c) { c.textContent = 'Mode 3D memerlukan dukungan WebGL.'; });
+                return;
+            }
+
+            var clock = new THREE.Clock();
+            var instances = [];
+
+            function addLights(scene) {
+                var key = new THREE.DirectionalLight(0xffffff, 0.8);
+                key.position.set(2, 3, 3);
+                scene.add(key);
+                scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+            }
+
+            /* ═══ SADARI — Neural Network ═══ */
+            function buildBrain(scene) {
+                var group = new THREE.Group();
+                scene.add(group);
+
+                var nodeCount = 65;
+                var nodeGeo = new THREE.SphereGeometry(0.04, 8, 8);
+                var nodes = [];
+                for (var i = 0; i < nodeCount; i++) {
+                    var phi = Math.acos(-1 + (2 * i) / nodeCount);
+                    var theta = Math.sqrt(nodeCount * Math.PI) * phi;
+                    var r = 1.1 + (Math.random() - 0.5) * 0.25;
+                    var mat = new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(0.65, 0.85, 0.65) });
+                    var m = new THREE.Mesh(nodeGeo, mat);
+                    m.position.set(
+                        r * Math.cos(theta) * Math.sin(phi),
+                        r * Math.sin(theta) * Math.sin(phi),
+                        r * Math.cos(phi)
+                    );
+                    group.add(m);
+                    nodes.push(m);
+                }
+
+                var conns = [];
+                for (var i = 0; i < nodes.length; i++) {
+                    for (var j = i + 1; j < nodes.length; j++) {
+                        if (nodes[i].position.distanceTo(nodes[j].position) < 0.72) {
+                            var geo = new THREE.BufferGeometry().setFromPoints([nodes[i].position.clone(), nodes[j].position.clone()]);
+                            var mat2 = new THREE.LineBasicMaterial({ color: 0x667eea, transparent: true, opacity: 0.18 });
+                            var line = new THREE.Line(geo, mat2);
+                            group.add(line);
+                            conns.push(line);
+                        }
+                    }
+                }
+
+                var coreGeo = new THREE.SphereGeometry(0.35, 20, 20);
+                var coreMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, transparent: true, opacity: 0.12 });
+                var core = new THREE.Mesh(coreGeo, coreMat);
+                group.add(core);
+
+                var dustN = 200;
+                var dPos = new Float32Array(dustN * 3);
+                for (var i = 0; i < dustN; i++) {
+                    dPos[i * 3] = (Math.random() - 0.5) * 3.5;
+                    dPos[i * 3 + 1] = (Math.random() - 0.5) * 3.5;
+                    dPos[i * 3 + 2] = (Math.random() - 0.5) * 3.5;
+                }
+                var dGeo = new THREE.BufferGeometry();
+                dGeo.setAttribute('position', new THREE.BufferAttribute(dPos, 3));
+                group.add(new THREE.Points(dGeo, new THREE.PointsMaterial({ color: 0xa78bfa, size: 0.018, transparent: true, opacity: 0.45 })));
+
+                var pulseN = 60;
+                var pPos = new Float32Array(pulseN * 3);
+                var pVel = [];
+                for (var i = 0; i < pulseN; i++) {
+                    pPos[i * 3] = pPos[i * 3 + 1] = pPos[i * 3 + 2] = 0;
+                    pVel.push({ x: 0, y: 0, z: 0, life: 0 });
+                }
+                var pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pPos, 3));
+                var pulsePoints = new THREE.Points(pGeo, new THREE.PointsMaterial({
+                    color: 0xc4b5fd, size: 0.045, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending
+                }));
+                group.add(pulsePoints);
+
+                addLights(scene);
+
+                return {
+                    update: function(t) {
+                        group.rotation.y = t * 0.22;
+                        group.rotation.x = Math.sin(t * 0.12) * 0.18;
+
+                        nodes.forEach(function(n, i) {
+                            var s = 1 + 0.7 * Math.sin(t * 2.5 + i * 0.35);
+                            n.scale.setScalar(s);
+                            n.material.color.setHSL(0.65 + 0.04 * Math.sin(t + i * 0.25), 0.85, 0.55 + 0.2 * Math.sin(t * 2 + i));
+                        });
+
+                        conns.forEach(function(c, i) {
+                            c.material.opacity = 0.08 + 0.2 * Math.abs(Math.sin(t * 3 + i * 0.4));
+                        });
+
+                        var cs = 1 + 0.2 * Math.sin(t * 1.3);
+                        core.scale.setScalar(cs);
+                        core.material.opacity = 0.08 + 0.08 * Math.sin(t * 1.3);
+
+                        var arr = pulsePoints.geometry.attributes.position.array;
+                        for (var i = 0; i < pulseN; i++) {
+                            pVel[i].life -= 0.016;
+                            if (pVel[i].life <= 0 && conns.length > 0) {
+                                var ci = Math.floor(Math.random() * conns.length);
+                                var cPos = conns[ci].geometry.attributes.position.array;
+                                arr[i * 3] = cPos[0]; arr[i * 3 + 1] = cPos[1]; arr[i * 3 + 2] = cPos[2];
+                                pVel[i].x = (cPos[3] - cPos[0]) * 0.03;
+                                pVel[i].y = (cPos[4] - cPos[1]) * 0.03;
+                                pVel[i].z = (cPos[5] - cPos[2]) * 0.03;
+                                pVel[i].life = 1;
+                            }
+                            arr[i * 3] += pVel[i].x;
+                            arr[i * 3 + 1] += pVel[i].y;
+                            arr[i * 3 + 2] += pVel[i].z;
+                        }
+                        pulsePoints.geometry.attributes.position.needsUpdate = true;
+                    }
+                };
+            }
+
+            /* ═══ PEDULI — Connected Orbits + Heart ═══ */
+            function buildEmpathy(scene) {
+                var group = new THREE.Group();
+                scene.add(group);
+
+                var torusGeo = new THREE.TorusGeometry(0.5, 0.1, 20, 64);
+                var torusMat = new THREE.MeshStandardMaterial({
+                    color: 0xff6b9d, emissive: 0x4a0020, roughness: 0.25, metalness: 0.5,
+                    transparent: true, opacity: 0.85
+                });
+                var torus = new THREE.Mesh(torusGeo, torusMat);
+                group.add(torus);
+
+                var orbCount = 8;
+                var orbGeo = new THREE.SphereGeometry(0.07, 12, 12);
+                var orbiters = [];
+                for (var i = 0; i < orbCount; i++) {
+                    var hue = 0.85 + (i / orbCount) * 0.15;
+                    var mat = new THREE.MeshStandardMaterial({
+                        color: new THREE.Color().setHSL(hue % 1, 0.7, 0.6),
+                        emissive: new THREE.Color().setHSL(hue % 1, 0.5, 0.12),
+                        roughness: 0.3, metalness: 0.4
+                    });
+                    var mesh = new THREE.Mesh(orbGeo, mat);
+                    group.add(mesh);
+                    orbiters.push({
+                        mesh: mesh,
+                        radius: 0.85 + Math.random() * 0.35,
+                        speed: 0.5 + Math.random() * 0.5,
+                        phase: (i / orbCount) * Math.PI * 2,
+                        tilt: (Math.random() - 0.5) * 1
+                    });
+                }
+
+                var cLines = [];
+                for (var i = 0; i < orbCount; i++) {
+                    var j = (i + 1) % orbCount;
+                    var geo = new THREE.BufferGeometry();
+                    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(6), 3));
+                    var line = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xff9ecd, transparent: true, opacity: 0.2 }));
+                    group.add(line);
+                    cLines.push({ line: line, i: i, j: j });
+                }
+
+                var rN = 250;
+                var rPos = new Float32Array(rN * 3);
+                for (var i = 0; i < rN; i++) {
+                    var a = (i / rN) * Math.PI * 2;
+                    var r = 1.15 + (Math.random() - 0.5) * 0.25;
+                    rPos[i * 3] = r * Math.cos(a);
+                    rPos[i * 3 + 1] = (Math.random() - 0.5) * 0.25;
+                    rPos[i * 3 + 2] = r * Math.sin(a);
+                }
+                var rGeo = new THREE.BufferGeometry();
+                rGeo.setAttribute('position', new THREE.BufferAttribute(rPos, 3));
+                var ringPts = new THREE.Points(rGeo, new THREE.PointsMaterial({ color: 0xffc0e0, size: 0.016, transparent: true, opacity: 0.55 }));
+                group.add(ringPts);
+
+                var heartN = 140;
+                var hPos = new Float32Array(heartN * 3);
+                for (var i = 0; i < heartN; i++) {
+                    var t2 = (i / heartN) * Math.PI * 2;
+                    var s = 0.055;
+                    var hx = s * 16 * Math.pow(Math.sin(t2), 3);
+                    var hy = s * (13 * Math.cos(t2) - 5 * Math.cos(2 * t2) - 2 * Math.cos(3 * t2) - Math.cos(4 * t2));
+                    hPos[i * 3] = hx + (Math.random() - 0.5) * 0.08;
+                    hPos[i * 3 + 1] = hy + (Math.random() - 0.5) * 0.08;
+                    hPos[i * 3 + 2] = (Math.random() - 0.5) * 0.15;
+                }
+                var hGeo = new THREE.BufferGeometry();
+                hGeo.setAttribute('position', new THREE.BufferAttribute(hPos, 3));
+                var heartPts = new THREE.Points(hGeo, new THREE.PointsMaterial({
+                    color: 0xff4081, size: 0.032, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending
+                }));
+                group.add(heartPts);
+
+                addLights(scene);
+                var pLight = new THREE.PointLight(0xff6b9d, 0.5, 5);
+                scene.add(pLight);
+
+                return {
+                    update: function(t) {
+                        group.rotation.y = t * 0.18;
+                        torus.rotation.x = Math.PI / 2 + Math.sin(t * 0.5) * 0.15;
+                        torus.rotation.z = t * 0.25;
+                        torus.scale.setScalar(1 + 0.06 * Math.sin(t * 2));
+
+                        orbiters.forEach(function(o) {
+                            var a = t * o.speed + o.phase;
+                            o.mesh.position.set(
+                                o.radius * Math.cos(a),
+                                Math.sin(a * 0.7 + o.tilt) * 0.3,
+                                o.radius * Math.sin(a)
+                            );
+                            o.mesh.scale.setScalar(1 + 0.3 * Math.sin(t * 3 + o.phase));
+                        });
+
+                        cLines.forEach(function(c) {
+                            var posArr = c.line.geometry.attributes.position.array;
+                            var pi = orbiters[c.i].mesh.position;
+                            var pj = orbiters[c.j].mesh.position;
+                            posArr[0] = pi.x; posArr[1] = pi.y; posArr[2] = pi.z;
+                            posArr[3] = pj.x; posArr[4] = pj.y; posArr[5] = pj.z;
+                            c.line.geometry.attributes.position.needsUpdate = true;
+                            c.line.material.opacity = 0.12 + 0.15 * Math.sin(t * 2 + c.i);
+                        });
+
+                        ringPts.rotation.y = -t * 0.08;
+                        heartPts.rotation.y = t * 0.4;
+                        heartPts.position.y = Math.sin(t * 1.5) * 0.08;
+                        heartPts.material.opacity = 0.5 + 0.35 * Math.sin(t * 2);
+                    }
+                };
+            }
+
+            /* ═══ BERANI — Rising Flame + Sparks ═══ */
+            function buildCourage(scene) {
+                var group = new THREE.Group();
+                scene.add(group);
+
+                var coneGeo = new THREE.ConeGeometry(0.3, 1.1, 16);
+                var coneMat = new THREE.MeshStandardMaterial({
+                    color: 0xffc857, emissive: 0x663300, roughness: 0.2, metalness: 0.5
+                });
+                var cone = new THREE.Mesh(coneGeo, coneMat);
+                cone.position.y = -0.05;
+                group.add(cone);
+
+                var pN = 350;
+                var pos = new Float32Array(pN * 3);
+                var col = new Float32Array(pN * 3);
+                var vel = [];
+
+                function resetP(i, randY) {
+                    var angle = Math.random() * Math.PI * 2;
+                    var radius = Math.random() * 0.35;
+                    pos[i * 3] = Math.cos(angle) * radius;
+                    pos[i * 3 + 1] = randY ? (Math.random() - 0.5) * 3 : -1;
+                    pos[i * 3 + 2] = Math.sin(angle) * radius;
+                    if (!vel[i]) vel[i] = {};
+                    vel[i].x = (Math.random() - 0.5) * 0.007;
+                    vel[i].y = 0.012 + Math.random() * 0.022;
+                    vel[i].z = (Math.random() - 0.5) * 0.007;
+                    var hue = 0.06 + Math.random() * 0.09;
+                    var c = new THREE.Color().setHSL(hue, 1, 0.5 + Math.random() * 0.25);
+                    col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+                }
+                for (var i = 0; i < pN; i++) resetP(i, true);
+
+                var pGeo = new THREE.BufferGeometry();
+                pGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                pGeo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+                var flamePts = new THREE.Points(pGeo, new THREE.PointsMaterial({
+                    size: 0.04, vertexColors: true, transparent: true, opacity: 0.85,
+                    blending: THREE.AdditiveBlending
+                }));
+                group.add(flamePts);
+
+                var sN = 80;
+                var sPos = new Float32Array(sN * 3);
+                var sVel = [];
+                for (var i = 0; i < sN; i++) {
+                    sPos[i * 3] = sPos[i * 3 + 1] = sPos[i * 3 + 2] = 0;
+                    sVel.push({ x: 0, y: 0, z: 0, life: 0 });
+                }
+                var sGeo = new THREE.BufferGeometry();
+                sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3));
+                var sparkPts = new THREE.Points(sGeo, new THREE.PointsMaterial({
+                    color: 0xfff176, size: 0.028, transparent: true, opacity: 0.9,
+                    blending: THREE.AdditiveBlending
+                }));
+                group.add(sparkPts);
+
+                var rings = [];
+                for (var r = 0; r < 3; r++) {
+                    var rGeo = new THREE.TorusGeometry(0.5 + r * 0.28, 0.015, 8, 48);
+                    var rMat = new THREE.MeshBasicMaterial({
+                        color: 0xffc857, transparent: true, opacity: 0.12, side: THREE.DoubleSide
+                    });
+                    var rMesh = new THREE.Mesh(rGeo, rMat);
+                    rMesh.rotation.x = Math.PI / 2;
+                    rMesh.position.y = -0.55;
+                    group.add(rMesh);
+                    rings.push({ mesh: rMesh, phase: r * 2.1 });
+                }
+
+                addLights(scene);
+                var pLight = new THREE.PointLight(0xffc857, 0.7, 5);
+                pLight.position.set(0, 0.5, 0);
+                scene.add(pLight);
+
+                var sparkTimer = 0;
+
+                return {
+                    update: function(t) {
+                        cone.position.y = -0.05 + Math.sin(t * 2) * 0.1;
+                        cone.rotation.y = t * 0.4;
+                        cone.scale.setScalar(1 + 0.04 * Math.sin(t * 3));
+
+                        for (var i = 0; i < pN; i++) {
+                            pos[i * 3] += vel[i].x;
+                            pos[i * 3 + 1] += vel[i].y;
+                            pos[i * 3 + 2] += vel[i].z;
+                            vel[i].x += (Math.random() - 0.5) * 0.001;
+                            vel[i].z += (Math.random() - 0.5) * 0.001;
+                            if (pos[i * 3 + 1] > 1.8) resetP(i, false);
+                        }
+                        flamePts.geometry.attributes.position.needsUpdate = true;
+
+                        sparkTimer += 0.016;
+                        if (sparkTimer > 0.5) {
+                            sparkTimer = 0;
+                            for (var i = 0; i < sN; i++) {
+                                if (sVel[i].life <= 0) {
+                                    var a = Math.random() * Math.PI * 2;
+                                    var el = (Math.random() - 0.3) * Math.PI * 0.5;
+                                    var sp = 0.02 + Math.random() * 0.03;
+                                    sPos[i * 3] = 0; sPos[i * 3 + 1] = 0.4; sPos[i * 3 + 2] = 0;
+                                    sVel[i].x = Math.cos(a) * Math.cos(el) * sp;
+                                    sVel[i].y = Math.sin(el) * sp + 0.01;
+                                    sVel[i].z = Math.sin(a) * Math.cos(el) * sp;
+                                    sVel[i].life = 0.8 + Math.random() * 0.5;
+                                }
+                            }
+                        }
+                        for (var i = 0; i < sN; i++) {
+                            sVel[i].life -= 0.016;
+                            sPos[i * 3] += sVel[i].x;
+                            sPos[i * 3 + 1] += sVel[i].y;
+                            sPos[i * 3 + 2] += sVel[i].z;
+                            sVel[i].y -= 0.0004;
+                        }
+                        sparkPts.geometry.attributes.position.needsUpdate = true;
+
+                        rings.forEach(function(r) {
+                            var s = 1 + 0.25 * Math.sin(t * 2 + r.phase);
+                            r.mesh.scale.setScalar(s);
+                            r.mesh.material.opacity = 0.06 + 0.1 * Math.abs(Math.sin(t * 2 + r.phase));
+                            r.mesh.position.y = -0.55 + Math.sin(t * 1.5 + r.phase) * 0.08;
+                        });
+
+                        pLight.intensity = 0.5 + 0.3 * Math.sin(t * 3);
+                    }
+                };
+            }
+
+            /* ─── Scene bootstrapping ─── */
+            var builders = { brain: buildBrain, empathy: buildEmpathy, courage: buildCourage };
+
+            containers.forEach(function(container) {
+                var key = container.dataset.model;
+                var builder = builders[key];
+                if (!builder) return;
+                container.textContent = '';
+
+                var scene = new THREE.Scene();
+                var camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 0.1, 100);
+                camera.position.set(0, 0, 3.8);
+
+                var renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                renderer.setClearColor(0x000000, 0);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+                container.appendChild(renderer.domElement);
+
+                var result = builder(scene);
+                instances.push({ container: container, scene: scene, camera: camera, renderer: renderer, result: result });
+            });
+
+            function animate() {
+                var t = clock.getElapsedTime();
+                instances.forEach(function(inst) {
+                    if (inst.result && inst.result.update) inst.result.update(t);
+                    inst.renderer.render(inst.scene, inst.camera);
+                });
+                requestAnimationFrame(animate);
+            }
+
+            function handleResize() {
+                instances.forEach(function(inst) {
+                    var w = inst.container.clientWidth, h = inst.container.clientHeight;
+                    if (!w || !h) return;
+                    inst.renderer.setSize(w, h);
+                    inst.camera.aspect = w / h;
+                    inst.camera.updateProjectionMatrix();
+                });
+            }
+
+            window.addEventListener('resize', handleResize);
+            animate();
+        })();
+        } catch(e) { console.warn('Three.js error:', e); }
     </script>
 </body>
 </html>
