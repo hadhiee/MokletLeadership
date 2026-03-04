@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>MOLESH Sesi 3 &ndash; Kolaborasi Tim: Scrum & Peer Review</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            min-height:100vh;
+            font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+            background:#0b0b1a;color:#e2e8f0;
+            overflow:hidden;position:relative;
+        }
+        .blob{position:fixed;border-radius:50%;filter:blur(100px);opacity:.35;z-index:0;will-change:transform;pointer-events:none}
+        .blob-1{width:480px;height:480px;background:#7c3aed;top:-15%;left:-10%;animation:drift 10s ease-in-out infinite alternate}
+        .blob-2{width:360px;height:360px;background:#06b6d4;bottom:-10%;right:-8%;animation:drift 12s ease-in-out infinite alternate-reverse}
+        .blob-3{width:260px;height:260px;background:#f43f5e;top:40%;left:55%;animation:drift 14s ease-in-out infinite alternate}
+        @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+
+        .presentation-container{
+            position:relative;z-index:1;
+            display:flex;align-items:center;justify-content:center;
+            width:100%;height:100vh;height:100dvh;
+            padding:60px 20px 90px;
+        }
+        .slide{
+            display:none;flex-direction:column;justify-content:center;
+            width:100%;max-width:700px;
+            background:rgba(255,255,255,.06);
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:28px;padding:44px 38px;
+            overflow-y:auto;max-height:calc(100dvh - 160px);
+            animation:pop .5s cubic-bezier(.22,1,.36,1) both;
+        }
+        .slide.active{display:flex}
+        @keyframes pop{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+
+        h1{
+            font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:12px;
+            background:linear-gradient(90deg,#fff 30%,#7dd3fc);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text;text-align:center;
+        }
+        h2{font-size:1.6rem;font-weight:700;margin-bottom:14px;color:#c4b5fd}
+        h3{font-size:1.15rem;font-weight:700;margin:14px 0 8px;color:#7dd3fc}
+        p{font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,.65);margin-bottom:10px}
+        em{color:rgba(255,255,255,.5);font-style:italic}
+        strong{color:#e2e8f0}
+        ul{list-style:none;padding:0;margin:8px 0 0}
+        li{
+            position:relative;padding-left:22px;
+            font-size:1.02rem;line-height:1.75;
+            color:rgba(255,255,255,.6);margin-bottom:8px;
+        }
+        li::before{
+            content:'';position:absolute;left:0;top:10px;
+            width:8px;height:8px;border-radius:50%;
+            background:linear-gradient(135deg,#7c3aed,#06b6d4);
+        }
+        .emoji{font-size:3rem;text-align:center;margin-bottom:14px}
+        .highlight{color:#c4b5fd;font-weight:700}
+        .cyan{color:#7dd3fc;font-weight:700}
+        .rose{color:#fb7185;font-weight:700}
+        .center-text{text-align:center}
+
+        /* quote / callout box */
+        .callout{
+            background:rgba(124,58,237,.12);border-left:3px solid #7c3aed;
+            border-radius:0 14px 14px 0;padding:14px 18px;margin:12px 0;
+            font-size:.98rem;line-height:1.7;color:rgba(255,255,255,.7);
+        }
+        .callout strong{color:#c4b5fd}
+
+        /* activity card */
+        .activity{
+            background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.18);
+            border-radius:16px;padding:18px 20px;margin:14px 0;
+        }
+        .activity-label{
+            display:inline-block;font-size:.72rem;font-weight:700;
+            text-transform:uppercase;letter-spacing:1.6px;color:#06b6d4;margin-bottom:8px;
+        }
+
+        /* numbered list inside activity */
+        ol{padding-left:20px;margin:6px 0 0}
+        ol li{padding-left:4px;margin-bottom:6px}
+        ol li::before{display:none}
+
+        .navigation{
+            position:fixed;bottom:max(16px, env(safe-area-inset-bottom));
+            left:50%;transform:translateX(-50%);
+            display:flex;gap:12px;z-index:999;
+            width:min(520px, calc(100vw - 24px));
+        }
+        .nav-button{
+            border:none;border-radius:16px;
+            background:linear-gradient(135deg,#7c3aed,#06b6d4);
+            color:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+            font-size:.95rem;font-weight:700;padding:12px 20px;
+            cursor:pointer;box-shadow:0 6px 28px rgba(124,58,237,.4);
+            white-space:nowrap;flex:1;
+            transition:transform .18s,box-shadow .18s;letter-spacing:.3px;
+        }
+        .nav-button:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(124,58,237,.5)}
+        .nav-button:active{transform:translateY(0)}
+        .nav-button:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:0 4px 16px rgba(124,58,237,.2)!important}
+
+        .slide-counter{
+            position:fixed;top:20px;right:20px;
+            background:rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,.1);color:#c4b5fd;
+            border-radius:999px;padding:8px 16px;font-weight:700;font-size:.9rem;
+            box-shadow:0 4px 16px rgba(0,0,0,.3);z-index:999;
+        }
+        .back-link{
+            position:fixed;top:20px;left:20px;
+            background:rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,.1);color:#7dd3fc;
+            border-radius:999px;padding:8px 16px;
+            font-weight:600;font-size:.85rem;text-decoration:none;
+            box-shadow:0 4px 16px rgba(0,0,0,.3);z-index:999;transition:background .2s;
+        }
+        .back-link:hover{background:rgba(255,255,255,.14)}
+
+        .session-nav{
+            display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:18px;
+        }
+        .session-nav-link{
+            display:inline-flex;align-items:center;gap:6px;
+            text-decoration:none;font-size:.88rem;font-weight:600;
+            color:#7dd3fc;padding:8px 18px;border-radius:50px;
+            background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+            transition:background .2s;
+        }
+        .session-nav-link:hover{background:rgba(255,255,255,.14)}
+
+        @media(max-width:768px){
+            .presentation-container{align-items:flex-start;padding:56px 12px calc(100px + env(safe-area-inset-bottom))}
+            .slide{margin-top:6px;max-height:calc(100dvh - 170px - env(safe-area-inset-bottom));padding:28px 24px;border-radius:20px;justify-content:flex-start}
+            h1{font-size:1.85rem}h2{font-size:1.4rem}h3{font-size:1.05rem}
+            p,li{font-size:.97rem;line-height:1.65}.emoji{font-size:2.5rem}
+            .navigation{width:calc(100vw - 24px);gap:10px}
+            .nav-button{font-size:.9rem;padding:11px 14px}
+            .slide-counter{top:12px;right:12px;font-size:.85rem;padding:7px 13px}
+            .back-link{top:12px;left:12px;font-size:.8rem;padding:7px 13px}
+        }
+        @media(max-width:420px){
+            .slide{padding:22px 18px;max-height:calc(100dvh - 155px - env(safe-area-inset-bottom))}
+            h1{font-size:1.6rem}h2{font-size:1.25rem}
+            .nav-button{font-size:.85rem;padding:10px 10px;border-radius:14px}
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <a href="index.html" class="back-link">&larr; Beranda</a>
+
+    <div class="presentation-container">
+
+        <section class="slide active">
+            <div class="emoji">&#129309;</div>
+            <h1>Sesi 3: Deep Dive &ldquo;Peduli&rdquo;</h1>
+            <p class="center-text" style="font-size:1.2rem;color:#c4b5fd;">Kolaborasi Tim &mdash; Scrum &amp; Peer Review</p>
+            <p class="center-text">Membangun empati dalam bekerja sama di proyek teknis.</p>
+            <p class="center-text" style="font-size:.85rem;color:rgba(255,255,255,.35);margin-top:8px;">MOLESH &bull; Sesi 3 dari 6 &bull; 30&ndash;45 menit</p>
+        </section>
+
+        <section class="slide">
+            <h2>Ice Breaking: Telepon Rusak Teknis</h2>
+            <div class="emoji">&#128222;</div>
+            <div class="activity">
+                <span class="activity-label">&#127918; Ice Breaking &bull; 5 menit</span>
+                <p>Satu orang menjelaskan cara <em>subnetting</em> atau <em>sorting algorithm</em> hanya dengan kata-kata (tanpa gambar). Yang lain menggambar. Lihat seberapa akurat hasilnya!</p>
+            </div>
+            <p><strong>Pelajaran:</strong> Komunikasi yang jelas = <span class="highlight">bandwidth tinggi</span>. Miskomunikasi = <span class="rose">packet loss</span>.</p>
+        </section>
+
+        <section class="slide">
+            <h2>Code Review dengan Empati</h2>
+            <div class="emoji">&#128221;</div>
+            <p>Memberi feedback bukan tentang menunjukkan siapa yang salah, tapi tentang membuat <span class="highlight">produk lebih baik bersama</span>.</p>
+            <h3>Teknik Sandwich Feedback</h3>
+            <ul>
+                <li><span class="cyan">&#127838; Roti atas:</span> Apresiasi dulu &mdash; &ldquo;Logika loop-nya sudah benar, keren!&rdquo;</li>
+                <li><span class="rose">&#129385; Isi:</span> Saran perbaikan &mdash; &ldquo;Variabel naming-nya bisa lebih deskriptif supaya rekan tim mudah baca.&rdquo;</li>
+                <li><span class="cyan">&#127838; Roti bawah:</span> Motivasi &mdash; &ldquo;Tinggal sedikit lagi, pasti bisa!&rdquo;</li>
+            </ul>
+            <div class="callout">
+                <strong>Mirror neuron:</strong> Saat kamu mengapresiasi orang lain, otak mereka melepas <em>oxytocin</em> (hormon kepercayaan) dan lebih terbuka menerima masukan.
+            </div>
+        </section>
+
+        <section class="slide">
+            <h2>Psychological Safety dalam Tim</h2>
+            <div class="emoji">&#128737;&#65039;</div>
+            <p>Riset Google (Project Aristotle) menemukan: <span class="highlight">tim terbaik bukan yang paling pintar</span>, tapi yang anggotanya merasa aman untuk bertanya tanpa takut dihakimi.</p>
+            <ul>
+                <li><strong>Aman bertanya:</strong> &ldquo;Maaf, bisa jelaskan ulang bagian ini?&rdquo;</li>
+                <li><strong>Aman gagal:</strong> &ldquo;Saya coba pendekatan ini, ternyata salah. Ini yang saya pelajari.&rdquo;</li>
+                <li><strong>Aman berpendapat:</strong> &ldquo;Menurut saya ada cara yang lebih efisien.&rdquo;</li>
+            </ul>
+            <p>Ketika amigdala tidak terancam, prefrontal cortex bebas berkreasi &rarr; <span class="cyan">produktivitas meningkat</span>.</p>
+        </section>
+
+        <section class="slide">
+            <h2>Listening as a Leader</h2>
+            <div class="emoji">&#128066;</div>
+            <p>Sebelum memberi solusi teknis, dengarkan dulu:</p>
+            <ul>
+                <li><span class="highlight">User story:</span> &ldquo;Sebagai pengguna, saya ingin... supaya...&rdquo;</li>
+                <li><span class="highlight">Rekan tim:</span> &ldquo;Kendalanya di bagian mana? Apa yang sudah dicoba?&rdquo;</li>
+                <li><span class="highlight">Klien:</span> &ldquo;Apa masalah utama yang ingin diselesaikan?&rdquo;</li>
+            </ul>
+            <div class="callout">
+                <strong>Prinsip:</strong> <em>Listen first, code later.</em> Software/Network dibuat oleh manusia, untuk manusia.
+            </div>
+        </section>
+
+        <section class="slide">
+            <h2>Aktivitas: Simulasi Peer Review</h2>
+            <div class="emoji">&#128101;</div>
+            <div class="activity">
+                <span class="activity-label">&#9997;&#65039; Aktivitas &bull; 15 menit</span>
+                <p>Berpasangan, periksa hasil pekerjaan temanmu (logika coding atau desain jaringan).</p>
+                <ol>
+                    <li>Baca/pahami pekerjaan temanmu selama 5 menit.</li>
+                    <li>Tulis <strong>1 pujian spesifik</strong> (bukan sekadar &ldquo;bagus&rdquo;).</li>
+                    <li>Tulis <strong>1 saran perbaikan yang sopan</strong> menggunakan teknik Sandwich.</li>
+                    <li>Sampaikan secara langsung dengan nada suara hangat.</li>
+                </ol>
+            </div>
+            <p style="font-size:.9rem;color:rgba(255,255,255,.4)">Ingat: tujuannya bukan kompetisi, tapi kolaborasi.</p>
+        </section>
+
+        <section class="slide">
+            <div class="emoji">&#10024;</div>
+            <h2 style="text-align:center">Penutup Sesi 3</h2>
+            <p class="center-text" style="font-size:1.15rem;color:#c4b5fd;">Software dan jaringan dibuat oleh manusia, untuk manusia.</p>
+            <p class="center-text"><span class="highlight">Peduli</span> bukan kelemahan&mdash;ini adalah <span class="cyan">superpower</span> yang membuat tim tidak sekadar bekerja, tapi bertumbuh bersama.</p>
+            <div class="callout" style="text-align:center">
+                <strong>Tantangan:</strong> Minggu ini, beri satu apresiasi spesifik ke rekan timmu setiap hari.
+            </div>
+            <div class="session-nav">
+                <a href="sesi2.html" class="session-nav-link prev">&larr; Sesi 2</a>
+                <a href="sesi4.html" class="session-nav-link next">Sesi 4 &rarr;</a>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">&larr; Sebelumnya</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Selanjutnya &rarr;</button>
+    </div>
+    <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">7</span></div>
+
+    <script>
+        var currentSlide=0;
+        var slides=document.querySelectorAll('.slide');
+        var totalSlides=slides.length;
+        var currentSlideEl=document.getElementById('currentSlide');
+        var totalSlidesEl=document.getElementById('totalSlides');
+        var prevBtn=document.getElementById('prevBtn');
+        var nextBtn=document.getElementById('nextBtn');
+        totalSlidesEl.textContent=totalSlides;
+        function showSlide(index){
+            for(var i=0;i<slides.length;i++){
+                if(i===index){slides[i].classList.add('active');slides[i].scrollTop=0}
+                else{slides[i].classList.remove('active')}
+            }
+            currentSlideEl.textContent=index+1;
+            prevBtn.disabled=index===0;
+            nextBtn.disabled=index===totalSlides-1;
+        }
+        function changeSlide(d){
+            var n=currentSlide+d;
+            if(n<0||n>=totalSlides)return;
+            currentSlide=n;showSlide(currentSlide);
+        }
+        document.addEventListener('keydown',function(e){
+            if(e.key==='ArrowRight')changeSlide(1);
+            if(e.key==='ArrowLeft')changeSlide(-1);
+        });
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

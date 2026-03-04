@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>MOLESH Sesi 5 &ndash; Kepemimpinan Organisasi</title>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            min-height:100vh;
+            font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+            background:#0b0b1a;color:#e2e8f0;
+            overflow:hidden;position:relative;
+        }
+        .blob{position:fixed;border-radius:50%;filter:blur(100px);opacity:.35;z-index:0;will-change:transform;pointer-events:none}
+        .blob-1{width:480px;height:480px;background:#7c3aed;top:-15%;left:-10%;animation:drift 10s ease-in-out infinite alternate}
+        .blob-2{width:360px;height:360px;background:#06b6d4;bottom:-10%;right:-8%;animation:drift 12s ease-in-out infinite alternate-reverse}
+        .blob-3{width:260px;height:260px;background:#f43f5e;top:40%;left:55%;animation:drift 14s ease-in-out infinite alternate}
+        @keyframes drift{0%{transform:translate(0,0) scale(1)}100%{transform:translate(30px,20px) scale(1.08)}}
+
+        .presentation-container{
+            position:relative;z-index:1;
+            display:flex;align-items:center;justify-content:center;
+            width:100%;height:100vh;height:100dvh;
+            padding:60px 20px 90px;
+        }
+        .slide{
+            display:none;flex-direction:column;justify-content:center;
+            width:100%;max-width:700px;
+            background:rgba(255,255,255,.06);
+            backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+            border:1px solid rgba(255,255,255,.1);
+            border-radius:28px;padding:44px 38px;
+            overflow-y:auto;max-height:calc(100dvh - 160px);
+            animation:pop .5s cubic-bezier(.22,1,.36,1) both;
+        }
+        .slide.active{display:flex}
+        @keyframes pop{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+
+        h1{
+            font-size:2.2rem;font-weight:800;line-height:1.15;margin-bottom:12px;
+            background:linear-gradient(90deg,#fff 30%,#7dd3fc);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+            background-clip:text;text-align:center;
+        }
+        h2{font-size:1.6rem;font-weight:700;margin-bottom:14px;color:#c4b5fd}
+        h3{font-size:1.15rem;font-weight:700;margin:14px 0 8px;color:#7dd3fc}
+        p{font-size:1.05rem;line-height:1.75;color:rgba(255,255,255,.65);margin-bottom:10px}
+        em{color:rgba(255,255,255,.5);font-style:italic}
+        strong{color:#e2e8f0}
+        ul{list-style:none;padding:0;margin:8px 0 0}
+        li{
+            position:relative;padding-left:22px;
+            font-size:1.02rem;line-height:1.75;
+            color:rgba(255,255,255,.6);margin-bottom:8px;
+        }
+        li::before{
+            content:'';position:absolute;left:0;top:10px;
+            width:8px;height:8px;border-radius:50%;
+            background:linear-gradient(135deg,#7c3aed,#06b6d4);
+        }
+        .emoji{font-size:3rem;text-align:center;margin-bottom:14px}
+        .highlight{color:#c4b5fd;font-weight:700}
+        .cyan{color:#7dd3fc;font-weight:700}
+        .rose{color:#fb7185;font-weight:700}
+        .center-text{text-align:center}
+
+        /* quote / callout box */
+        .callout{
+            background:rgba(124,58,237,.12);border-left:3px solid #7c3aed;
+            border-radius:0 14px 14px 0;padding:14px 18px;margin:12px 0;
+            font-size:.98rem;line-height:1.7;color:rgba(255,255,255,.7);
+        }
+        .callout strong{color:#c4b5fd}
+
+        /* activity card */
+        .activity{
+            background:rgba(6,182,212,.08);border:1px solid rgba(6,182,212,.18);
+            border-radius:16px;padding:18px 20px;margin:14px 0;
+        }
+        .activity-label{
+            display:inline-block;font-size:.72rem;font-weight:700;
+            text-transform:uppercase;letter-spacing:1.6px;color:#06b6d4;margin-bottom:8px;
+        }
+
+        /* numbered list inside activity */
+        ol{padding-left:20px;margin:6px 0 0}
+        ol li{padding-left:4px;margin-bottom:6px}
+        ol li::before{display:none}
+
+        .navigation{
+            position:fixed;bottom:max(16px, env(safe-area-inset-bottom));
+            left:50%;transform:translateX(-50%);
+            display:flex;gap:12px;z-index:999;
+            width:min(520px, calc(100vw - 24px));
+        }
+        .nav-button{
+            border:none;border-radius:16px;
+            background:linear-gradient(135deg,#7c3aed,#06b6d4);
+            color:#fff;font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+            font-size:.95rem;font-weight:700;padding:12px 20px;
+            cursor:pointer;box-shadow:0 6px 28px rgba(124,58,237,.4);
+            white-space:nowrap;flex:1;
+            transition:transform .18s,box-shadow .18s;letter-spacing:.3px;
+        }
+        .nav-button:hover{transform:translateY(-2px);box-shadow:0 10px 36px rgba(124,58,237,.5)}
+        .nav-button:active{transform:translateY(0)}
+        .nav-button:disabled{opacity:.3;cursor:not-allowed;transform:none!important;box-shadow:0 4px 16px rgba(124,58,237,.2)!important}
+
+        .slide-counter{
+            position:fixed;top:20px;right:20px;
+            background:rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,.1);color:#c4b5fd;
+            border-radius:999px;padding:8px 16px;font-weight:700;font-size:.9rem;
+            box-shadow:0 4px 16px rgba(0,0,0,.3);z-index:999;
+        }
+        .back-link{
+            position:fixed;top:20px;left:20px;
+            background:rgba(255,255,255,.08);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+            border:1px solid rgba(255,255,255,.1);color:#7dd3fc;
+            border-radius:999px;padding:8px 16px;
+            font-weight:600;font-size:.85rem;text-decoration:none;
+            box-shadow:0 4px 16px rgba(0,0,0,.3);z-index:999;transition:background .2s;
+        }
+        .back-link:hover{background:rgba(255,255,255,.14)}
+
+        .session-nav{
+            display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:18px;
+        }
+        .session-nav-link{
+            display:inline-flex;align-items:center;gap:6px;
+            text-decoration:none;font-size:.88rem;font-weight:600;
+            color:#7dd3fc;padding:8px 18px;border-radius:50px;
+            background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+            transition:background .2s;
+        }
+        .session-nav-link:hover{background:rgba(255,255,255,.14)}
+
+        @media(max-width:768px){
+            .presentation-container{align-items:flex-start;padding:56px 12px calc(100px + env(safe-area-inset-bottom))}
+            .slide{margin-top:6px;max-height:calc(100dvh - 170px - env(safe-area-inset-bottom));padding:28px 24px;border-radius:20px;justify-content:flex-start}
+            h1{font-size:1.85rem}h2{font-size:1.4rem}h3{font-size:1.05rem}
+            p,li{font-size:.97rem;line-height:1.65}.emoji{font-size:2.5rem}
+            .navigation{width:calc(100vw - 24px);gap:10px}
+            .nav-button{font-size:.9rem;padding:11px 14px}
+            .slide-counter{top:12px;right:12px;font-size:.85rem;padding:7px 13px}
+            .back-link{top:12px;left:12px;font-size:.8rem;padding:7px 13px}
+        }
+        @media(max-width:420px){
+            .slide{padding:22px 18px;max-height:calc(100dvh - 155px - env(safe-area-inset-bottom))}
+            h1{font-size:1.6rem}h2{font-size:1.25rem}
+            .nav-button{font-size:.85rem;padding:10px 10px;border-radius:14px}
+        }
+    </style>
+</head>
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <a href="index.html" class="back-link">&larr; Beranda</a>
+
+    <div class="presentation-container">
+
+        <section class="slide active">
+            <div class="emoji">&#127942;</div>
+            <h1>Sesi 5: MOLESH &amp; Kepemimpinan Organisasi</h1>
+            <p class="center-text" style="font-size:1.2rem;color:#c4b5fd;">Situational Leadership &amp; Conflict Resolution</p>
+            <p class="center-text">Menerapkan Sadari, Peduli, Berani dalam memimpin tim dan organisasi.</p>
+            <p class="center-text" style="font-size:.85rem;color:rgba(255,255,255,.35);margin-top:8px;">MOLESH &bull; Sesi 5 dari 6 &bull; 30&ndash;45 menit</p>
+        </section>
+
+        <section class="slide">
+            <h2>Project Manager = MOLESH in Action</h2>
+            <div class="emoji">&#128188;</div>
+            <p>Seorang PM (Project Manager) atau ketua tim IT setiap hari menerapkan tiga pilar:</p>
+            <ul>
+                <li><span class="highlight">Sadari:</span> Memahami kondisi tim, deadline, dan resource yang tersedia.</li>
+                <li><span class="cyan">Peduli:</span> Mendengarkan keluhan anggota, memastikan workload adil.</li>
+                <li><span class="rose">Berani:</span> Mengambil keputusan sulit saat sprint gagal atau harus pivot.</li>
+            </ul>
+            <div class="callout">
+                <strong>Analogi:</strong> PM itu seperti <code style="color:#7dd3fc;background:rgba(6,182,212,.12);padding:2px 6px;border-radius:6px">load balancer</code>&mdash;mendistribusikan beban kerja supaya tidak ada server (anggota) yang overload.
+            </div>
+        </section>
+
+        <section class="slide">
+            <h2>Situational Leadership</h2>
+            <div class="emoji">&#127919;</div>
+            <p>Tidak ada satu gaya kepemimpinan yang cocok untuk semua situasi:</p>
+            <ul>
+                <li><strong>Directing</strong> (Sadari situasi + Berani instruksikan): Saat anggota baru dan butuh arahan jelas.</li>
+                <li><strong>Coaching</strong> (Sadari + Peduli): Saat anggota sudah mulai paham tapi masih butuh bimbingan.</li>
+                <li><strong>Supporting</strong> (Peduli): Saat anggota sudah kompeten tapi butuh motivasi.</li>
+                <li><strong>Delegating</strong> (Berani percaya): Saat anggota sudah ahli&mdash;berikan kebebasan.</li>
+            </ul>
+            <p style="font-size:.9rem;color:rgba(255,255,255,.4)">Kunci: <em>Sadari</em> dulu kondisinya, baru pilih gaya yang tepat.</p>
+        </section>
+
+        <section class="slide">
+            <h2>Conflict Resolution</h2>
+            <div class="emoji">&#9760;&#65039;</div>
+            <p>Konflik dalam tim itu <span class="highlight">normal</span>. Yang membedakan tim hebat adalah cara menanganinya:</p>
+            <h3>Prefrontal Cortex vs Amigdala</h3>
+            <ul>
+                <li><span class="rose">Amigdala mode:</span> Marah, menyalahkan, defensif &rarr; konflik makin besar.</li>
+                <li><span class="cyan">Prefrontal mode:</span> Tarik napas, dengarkan semua pihak, cari solusi bersama.</li>
+            </ul>
+            <h3>Framework Resolusi:</h3>
+            <ul>
+                <li><strong>1. Pause:</strong> Jangan langsung bereaksi. Tarik napas 4 detik.</li>
+                <li><strong>2. Listen:</strong> Dengarkan kedua sisi tanpa interupsi.</li>
+                <li><strong>3. Reframe:</strong> &ldquo;Masalahnya bukan siapa yang salah, tapi bagaimana kita selesaikan.&rdquo;</li>
+                <li><strong>4. Solve:</strong> Sepakat pada aksi nyata dan timeline.</li>
+            </ul>
+        </section>
+
+        <section class="slide">
+            <h2>Leading by Example</h2>
+            <div class="emoji">&#11088;</div>
+            <p>Pemimpin adalah orang pertama yang <span class="highlight">menjalankan</span> apa yang dia katakan:</p>
+            <ul>
+                <li>Minta tim on-time? Kamu yang <strong>pertama hadir</strong>.</li>
+                <li>Minta kode bersih? Kamu yang <strong>pertama refactor</strong>.</li>
+                <li>Minta tim jujur? Kamu yang <strong>pertama mengakui kesalahan</strong>.</li>
+            </ul>
+            <div class="callout">
+                <strong>Prinsip:</strong> Kepemimpinan bukan tentang jabatan (Ketua OSIS, Ketua Kelas), tapi tentang <span class="highlight">pengaruh</span>. Siapa pun bisa memimpin dari posisi apa pun.
+            </div>
+        </section>
+
+        <section class="slide">
+            <h2>Aktivitas: Roleplay</h2>
+            <div class="emoji">&#127917;</div>
+            <div class="activity">
+                <span class="activity-label">&#127917; Roleplay &bull; 15 menit</span>
+                <p><strong>Skenario:</strong> Kamu memimpin tim proyek. Satu anggota sering telat submit dan tidak hadir meeting. Tim mulai mengeluh.</p>
+                <ol>
+                    <li><span class="highlight">Sadari:</span> Kontrol emosimu dulu. Jangan langsung marah.</li>
+                    <li><span class="cyan">Peduli:</span> Ajak bicara empat mata. Tanya: &ldquo;Ada kendala apa? Bisa saya bantu?&rdquo;</li>
+                    <li><span class="rose">Berani:</span> Jika setelah diberi kesempatan tetap tidak berubah, tegas beri konsekuensi yang adil.</li>
+                </ol>
+                <p style="margin-top:8px">Tiga orang maju: 1 jadi pemimpin, 1 jadi anggota bermasalah, 1 jadi observer yang memberi feedback.</p>
+            </div>
+        </section>
+
+        <section class="slide">
+            <div class="emoji">&#10024;</div>
+            <h2 style="text-align:center">Penutup Sesi 5</h2>
+            <p class="center-text" style="font-size:1.15rem;color:#c4b5fd;">Kepemimpinan bukan tentang jabatan, tapi pengaruh.</p>
+            <p class="center-text">Kamu tidak perlu menunggu jadi ketua untuk mulai <span class="highlight">menyadari</span>, <span class="cyan">peduli</span>, dan <span class="rose">berani</span>.</p>
+            <div class="callout" style="text-align:center">
+                <strong>Tantangan:</strong> Minggu ini, ambil tanggung jawab satu hal kecil di kelas/tim yang selama ini tidak ada yang mengurus.
+            </div>
+            <div class="session-nav">
+                <a href="sesi4.html" class="session-nav-link prev">&larr; Sesi 4</a>
+                <a href="sesi6.html" class="session-nav-link next">Sesi 6 &rarr;</a>
+            </div>
+        </section>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">&larr; Sebelumnya</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Selanjutnya &rarr;</button>
+    </div>
+    <div class="slide-counter"><span id="currentSlide">1</span> / <span id="totalSlides">7</span></div>
+
+    <script>
+        var currentSlide=0;
+        var slides=document.querySelectorAll('.slide');
+        var totalSlides=slides.length;
+        var currentSlideEl=document.getElementById('currentSlide');
+        var totalSlidesEl=document.getElementById('totalSlides');
+        var prevBtn=document.getElementById('prevBtn');
+        var nextBtn=document.getElementById('nextBtn');
+        totalSlidesEl.textContent=totalSlides;
+        function showSlide(index){
+            for(var i=0;i<slides.length;i++){
+                if(i===index){slides[i].classList.add('active');slides[i].scrollTop=0}
+                else{slides[i].classList.remove('active')}
+            }
+            currentSlideEl.textContent=index+1;
+            prevBtn.disabled=index===0;
+            nextBtn.disabled=index===totalSlides-1;
+        }
+        function changeSlide(d){
+            var n=currentSlide+d;
+            if(n<0||n>=totalSlides)return;
+            currentSlide=n;showSlide(currentSlide);
+        }
+        document.addEventListener('keydown',function(e){
+            if(e.key==='ArrowRight')changeSlide(1);
+            if(e.key==='ArrowLeft')changeSlide(-1);
+        });
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

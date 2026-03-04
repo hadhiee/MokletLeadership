@@ -30,7 +30,7 @@
             background:#0b0b1a;
             color:#e2e8f0;
             padding:24px;
-            overflow:hidden;
+            overflow-x:hidden;
             position:relative;
         }
 
@@ -44,7 +44,7 @@
         /* card */
         .card{
             position:relative;z-index:1;
-            width:100%;max-width:480px;
+            width:100%;max-width:520px;
             background:rgba(255,255,255,.06);
             backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
             border:1px solid rgba(255,255,255,.1);
@@ -83,7 +83,7 @@
         }
 
         /* pillar pills */
-        .pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0 28px}
+        .pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:20px 0 24px}
         .pill{
             display:flex;align-items:center;gap:5px;
             background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);
@@ -92,6 +92,26 @@
             transition:background .2s;
         }
         .pill:hover{background:rgba(255,255,255,.14)}
+
+        /* session grid */
+        .sessions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 24px;width:100%}
+        .session-link{
+            display:flex;align-items:center;gap:10px;
+            text-decoration:none;
+            background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+            border-radius:14px;padding:12px 14px;
+            transition:background .2s,transform .18s;
+        }
+        .session-link:hover{background:rgba(255,255,255,.1);transform:translateY(-2px)}
+        .session-link .s-num{
+            flex-shrink:0;width:32px;height:32px;
+            background:linear-gradient(135deg,#7c3aed,#06b6d4);
+            border-radius:10px;display:grid;place-items:center;
+            font-size:.75rem;font-weight:800;color:#fff;
+        }
+        .session-link .s-info{text-align:left}
+        .session-link .s-title{font-size:.78rem;font-weight:700;color:#e2e8f0;line-height:1.3}
+        .session-link .s-desc{font-size:.65rem;color:rgba(255,255,255,.4);line-height:1.4;margin-top:2px}
 
         /* CTA */
         .cta{
@@ -109,11 +129,12 @@
         .cta svg{width:18px;height:18px;fill:currentColor;transition:transform .18s}
         .cta:hover svg{transform:translateX(4px)}
 
-        .footer{margin-top:26px;font-size:.7rem;color:rgba(255,255,255,.25)}
+        .footer{margin-top:22px;font-size:.7rem;color:rgba(255,255,255,.25)}
 
         @media(max-width:480px){
             .card{padding:36px 20px 30px;border-radius:22px}
             h1{font-size:1.7rem}
+            .sessions{grid-template-columns:1fr}
             .cta{padding:13px 26px;font-size:.88rem}
         }
     </style>
@@ -127,7 +148,7 @@
         <div class="icon">🎓</div>
         <span class="tag">Leadership &amp; Softskill</span>
         <h1>Moklet Leadership</h1>
-        <p class="desc">Modul <strong style="color:#c4b5fd">Leadership</strong> &amp; <strong style="color:#7dd3fc">Softskill</strong> siswa Moklet — ringkas, praktis, siap dipelajari kapan saja.</p>
+        <p class="desc">Kurikulum <strong style="color:#c4b5fd">Leadership</strong> &amp; <strong style="color:#7dd3fc">Softskill</strong> untuk siswa RPL &amp; TKJ Moklet — 6 sesi, ringkas, praktis.</p>
 
         <div class="pills">
             <span class="pill">💡 Sadari</span>
@@ -135,12 +156,57 @@
             <span class="pill">🔥 Berani</span>
         </div>
 
+        <div class="sessions">
+            <a class="session-link" href="presentasi.html">
+                <div class="s-num">S1</div>
+                <div class="s-info">
+                    <div class="s-title">Fondasi MOLESH</div>
+                    <div class="s-desc">Sadari, Peduli, Berani &amp; neuroscience</div>
+                </div>
+            </a>
+            <a class="session-link" href="sesi2.html">
+                <div class="s-num">S2</div>
+                <div class="s-info">
+                    <div class="s-title">Deep Dive Sadari</div>
+                    <div class="s-desc">Growth mindset &amp; personal branding</div>
+                </div>
+            </a>
+            <a class="session-link" href="sesi3.html">
+                <div class="s-num">S3</div>
+                <div class="s-info">
+                    <div class="s-title">Deep Dive Peduli</div>
+                    <div class="s-desc">Kolaborasi tim &amp; peer review</div>
+                </div>
+            </a>
+            <a class="session-link" href="sesi4.html">
+                <div class="s-num">S4</div>
+                <div class="s-info">
+                    <div class="s-title">Deep Dive Berani</div>
+                    <div class="s-desc">Etika digital &amp; pengambilan keputusan</div>
+                </div>
+            </a>
+            <a class="session-link" href="sesi5.html">
+                <div class="s-num">S5</div>
+                <div class="s-info">
+                    <div class="s-title">Kepemimpinan Organisasi</div>
+                    <div class="s-desc">Situational leadership &amp; conflict resolution</div>
+                </div>
+            </a>
+            <a class="session-link" href="sesi6.html">
+                <div class="s-num">S6</div>
+                <div class="s-info">
+                    <div class="s-title">Rencana Aksi</div>
+                    <div class="s-desc">Personal leadership roadmap 3 bulan</div>
+                </div>
+            </a>
+        </div>
+
         <a class="cta" href="presentasi.html">
-            BUKA MATERI
+            MULAI SESI 1
             <svg viewBox="0 0 20 20"><path d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"/></svg>
         </a>
 
-        <p class="footer">© 2026 Moklet Leadership</p>
+        <p class="footer">© 2026 Moklet Leadership &bull; SMK Telkom Malang</p>
     </main>
 </body>
 </html>
