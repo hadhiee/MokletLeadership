@@ -24,6 +24,7 @@
  */
 
 var SHEET_NAME = 'Students';
+var SHEET_ID = '1T0Bu-46xgInjUK1VxE8WeeMJ8V-REsKXET5KdyjWlgo'; // MOLESH Data spreadsheet
 
 /* ── Handle POST (login & saveProfile) ── */
 function doPost(e) {
@@ -69,7 +70,7 @@ function doGet(e) {
 
 /* ── Get or create the Students sheet ── */
 function getOrCreateSheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = SpreadsheetApp.openById(SHEET_ID);
   var sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.insertSheet(SHEET_NAME);
