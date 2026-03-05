@@ -197,9 +197,28 @@ function getOrCreateCheckinLog() {
 /* Save a new check-in setting (admin) */
 function handleSaveCheckinSetting(data) {
   var sheet = getOrCreateCheckinSettings();
-  var id = 'ci_' + new Date().getTime();
-  var now = new Date().toISOString();
-  sheet.appendRow([id, data.tanggal, data.deskripsi || '', data.status || 'aktif', now]);
+  
+  /* Check for duplicate (same tanggal + deskripsi within last 5 seconds) to prevent double-submit */
+  var allData = sheet.getDataRange().getValues();
+  var now = new Date();
+  for (var i = 1; i < allData.length; i++) {
+    var existingTanggal = allData[i][1];
+    if (existingTanggal instanceof Date) {
+      existingTanggal = Utilities.formatDate(existingTanggal, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    }
+    var existingDesc = allData[i][2];
+    var existingTime = new Date(allData[i][4]);
+    var timeDiff = (now - existingTime) / 1000; /* seconds */
+    
+    if (existingTanggal === data.tanggal && existingDesc === (data.deskripsi || '') && timeDiff < 5) {
+      /* Duplicate detected within 5 seconds */
+      return jsonResponse({ status: 'duplicate', id: allData[i][0] });
+    }
+  }
+  
+  var id = 'ci_' + now.getTime();
+  var nowISO = now.toISOString();
+  sheet.appendRow([id, data.tanggal, data.deskripsi || '', data.status || 'aktif', nowISO]);
   return jsonResponse({ status: 'ok', id: id });
 }
 

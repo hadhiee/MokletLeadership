@@ -523,6 +523,8 @@
         var ciSettings = [];
         var ciLogs = [];
         var _selectedTanggal = ''; /* track date picker value reliably */
+        var _saving = false; /* prevent double submit */
+        var _dateListenerAttached = false;
 
         function openCheckinModal() {
             document.getElementById('ciModal').classList.add('show');
@@ -530,29 +532,37 @@
             var todayStr = now.getFullYear() + '-' +
                 String(now.getMonth()+1).padStart(2,'0') + '-' +
                 String(now.getDate()).padStart(2,'0');
-            document.getElementById('ciTanggal').value = todayStr;
+            var dtInput = document.getElementById('ciTanggal');
+            dtInput.value = todayStr;
             _selectedTanggal = todayStr;
             updateTanggalPreview(todayStr);
             document.getElementById('ciDeskripsi').value = '';
             document.getElementById('ciStatus').value = 'aktif';
+
+            /* Attach event listeners when modal opens (Android reliability) */
+            if (!_dateListenerAttached) {
+                dtInput.addEventListener('change', handleDateChange);
+                dtInput.addEventListener('input', handleDateChange);
+                dtInput.addEventListener('blur', handleDateChange);
+                _dateListenerAttached = true;
+            }
+            /* Force re-read value after a tick */
+            setTimeout(function(){
+                _selectedTanggal = dtInput.value;
+                updateTanggalPreview(dtInput.value);
+            }, 100);
         }
+
+        function handleDateChange(e) {
+            var val = e.target.value;
+            _selectedTanggal = val;
+            updateTanggalPreview(val);
+            console.log('Date changed to:', val);
+        }
+
         function closeCheckinModal() {
             document.getElementById('ciModal').classList.remove('show');
         }
-        /* Listen date changes — track in variable for Android reliability */
-        document.addEventListener('DOMContentLoaded', function(){
-            var dtInput = document.getElementById('ciTanggal');
-            if(dtInput) {
-                dtInput.addEventListener('change', function(){
-                    _selectedTanggal = this.value;
-                    updateTanggalPreview(this.value);
-                });
-                dtInput.addEventListener('input', function(){
-                    _selectedTanggal = this.value;
-                    updateTanggalPreview(this.value);
-                });
-            }
-        });
         function updateTanggalPreview(val){
             var el = document.getElementById('ciTanggalPreview');
             if(!el) return;
@@ -565,11 +575,19 @@
         }
 
         function saveCheckinSetting() {
-            /* Read from tracked variable first, fallback to input.value */
+            if (_saving) {
+                console.log('Already saving, skipping...');
+                return;
+            }
+
+            /* Read from input directly, then from tracked variable */
             var tanggalInput = document.getElementById('ciTanggal');
-            var tanggal = _selectedTanggal || tanggalInput.value;
+            var tanggal = tanggalInput.value || _selectedTanggal;
             var deskripsi = document.getElementById('ciDeskripsi').value;
             var status = document.getElementById('ciStatus').value;
+            
+            console.log('Save attempt - input.value:', tanggalInput.value, '| tracked:', _selectedTanggal, '| final:', tanggal);
+
             if (!tanggal) { alert('Tanggal wajib diisi!'); return; }
 
             /* Show confirmation with the date */
@@ -581,14 +599,29 @@
             } catch(e){}
             if (!confirm('Simpan jadwal check-in?\n\nTanggal: ' + previewDate + '\nDeskripsi: ' + (deskripsi||'-') + '\nStatus: ' + status)) return;
 
+            _saving = true;
+            var saveBtn = document.querySelector('.btn-primary');
+            var origText = saveBtn.textContent;
+            saveBtn.textContent = '⏳ Menyimpan...';
+            saveBtn.disabled = true;
+
             var payload = JSON.stringify({ action: 'saveCheckinSetting', tanggal: tanggal, deskripsi: deskripsi, status: status });
             fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: payload })
                 .then(function(){
                     closeCheckinModal();
-                    /* Wait a moment for GAS to process, then reload */
-                    setTimeout(function(){ loadCheckinData(); }, 1500);
+                    setTimeout(function(){ 
+                        loadCheckinData(); 
+                        _saving = false;
+                        saveBtn.textContent = origText;
+                        saveBtn.disabled = false;
+                    }, 1500);
                 })
-                .catch(function(err){ alert('Gagal menyimpan: ' + err.message); });
+                .catch(function(err){ 
+                    alert('Gagal menyimpan: ' + err.message); 
+                    _saving = false;
+                    saveBtn.textContent = origText;
+                    saveBtn.disabled = false;
+                });
         }
 
         function deleteCheckinSetting(id) {
@@ -801,7 +834,7 @@
             <h3>📅 Tambah Jadwal Check-In</h3>
             <p>Atur tanggal check-in untuk siswa. Siswa hanya bisa check-in pada tanggal yang aktif.</p>
             <label>Tanggal</label>
-            <input type="date" id="ciTanggal">
+            <input type="date" id="ciTanggal" onchange="_selectedTanggal=this.value;updateTanggalPreview(this.value)">
             <div id="ciTanggalPreview" style="font-size:.82rem;color:#c4b5fd;margin:-10px 0 14px 2px"></div>
             <label>Deskripsi (opsional)</label>
             <input type="text" id="ciDeskripsi" placeholder="Misal: Pertemuan Sesi 1">
