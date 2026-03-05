@@ -296,6 +296,7 @@
     <!-- Toast notification -->
     <div class="toast" id="toast"></div>
 
+    <script src="config.js"></script>
     <script>
         var STORAGE_KEY = 'molesh_profile';
         var USER_KEY    = 'molesh_user';
@@ -368,6 +369,30 @@
             localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
             showSavedPreview(profile);
             showToast('✅ Profil berhasil disimpan!');
+
+            /* Sync to cloud */
+            syncToCloud(profile);
+        }
+
+        /* ── Cloud sync ── */
+        function syncToCloud(profile) {
+            if (typeof MOLESH_CONFIG === 'undefined' || MOLESH_CONFIG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') return;
+            var userRaw = localStorage.getItem(USER_KEY);
+            var user = userRaw ? JSON.parse(userRaw) : {};
+            if (!user.email || user.email === 'Mode pratinjau') return;
+            fetch(MOLESH_CONFIG.APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'saveProfile',
+                    email: user.email,
+                    googleName: user.name,
+                    picture: user.picture,
+                    nama: profile.nama,
+                    kelas: profile.kelas,
+                    absen: profile.absen
+                })
+            }).then(function(){ showToast('☁️ Tersinkron ke cloud'); })
+              .catch(function(){ showToast('⚠️ Gagal sinkron ke cloud', true); });
         }
 
         /* ── Reset profile ── */

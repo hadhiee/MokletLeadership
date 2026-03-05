@@ -190,6 +190,15 @@
         }
         .profile-btn:hover{background:rgba(124,58,237,.25);color:#e2d6ff;border-color:rgba(124,58,237,.4)}
 
+        .admin-btn{
+            text-decoration:none;
+            background:rgba(244,63,94,.15);border:1px solid rgba(244,63,94,.25);
+            border-radius:10px;color:#fb7185;
+            font-family:inherit;font-size:.72rem;font-weight:600;
+            padding:7px 14px;transition:all .2s;
+        }
+        .admin-btn:hover{background:rgba(244,63,94,.25);color:#fda4af;border-color:rgba(244,63,94,.4)}
+
         .dash-card{
             background:rgba(255,255,255,.06);
             backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -377,6 +386,7 @@
 
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="config.js"></script>
     <script>
         /*
          * ─── CONFIG ───────────────────────────────────
@@ -417,6 +427,28 @@
             userAvatar.onerror = function(){ this.src = fallbackSvg; };
             userName.textContent  = user.name  || 'Pengguna';
             userEmail.textContent = user.email || '';
+
+            /* Show admin button for admin email */
+            if (typeof MOLESH_CONFIG !== 'undefined' && user.email === MOLESH_CONFIG.ADMIN_EMAIL) {
+                if (!document.querySelector('.admin-btn')) {
+                    var adminBtn = document.createElement('a');
+                    adminBtn.className = 'admin-btn';
+                    adminBtn.href = 'admin.html';
+                    adminBtn.textContent = '\u{1F6E1}\uFE0F Admin';
+                    var profileBtn = document.querySelector('.profile-btn');
+                    if (profileBtn) profileBtn.parentNode.insertBefore(adminBtn, profileBtn);
+                }
+            }
+        }
+
+        /* ── Track login to cloud ── */
+        function trackLogin(user) {
+            if (typeof MOLESH_CONFIG === 'undefined' || MOLESH_CONFIG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') return;
+            if (!user.email || user.email === 'Mode pratinjau') return;
+            fetch(MOLESH_CONFIG.APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'login', email: user.email, googleName: user.name, picture: user.picture })
+            }).catch(function(){});
         }
 
         /* ── Google Sign-In ── */
@@ -458,6 +490,7 @@
                                     var user = { name: profile.name, email: profile.email, picture: profile.picture };
                                     localStorage.setItem('molesh_user', JSON.stringify(user));
                                     showDashboard(user);
+                                    trackLogin(user);
                                 });
                             }
                         }
@@ -472,6 +505,7 @@
             var user = { name: payload.name, email: payload.email, picture: payload.picture };
             localStorage.setItem('molesh_user', JSON.stringify(user));
             showDashboard(user);
+            trackLogin(user);
         }
 
         /* ── Guest access ── */
