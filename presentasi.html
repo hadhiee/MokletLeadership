@@ -681,7 +681,37 @@
                 card.style.opacity = '0';
                 card.style.transform = 'translateX(20px)';
                 setTimeout(function(){ card.remove(); }, 300);
+                /* Save to localStorage so it won't appear again */
+                markCheckinDismissed(ciId);
             }
+        }
+
+        /* Get/Set dismissed check-in IDs per user */
+        function getDismissedCheckinIds() {
+            var raw = localStorage.getItem('molesh_user');
+            if (!raw) return [];
+            try {
+                var user = JSON.parse(raw);
+                var email = user.email;
+                if (!email || email === 'Mode pratinjau') return [];
+                var allData = JSON.parse(localStorage.getItem('molesh_checkins_dismissed') || '{}');
+                return allData[email] || [];
+            } catch(e){ return []; }
+        }
+        function markCheckinDismissed(ciId) {
+            var raw = localStorage.getItem('molesh_user');
+            if (!raw) return;
+            try {
+                var user = JSON.parse(raw);
+                var email = user.email;
+                if (!email || email === 'Mode pratinjau') return;
+                var allData = JSON.parse(localStorage.getItem('molesh_checkins_dismissed') || '{}');
+                if (!allData[email]) allData[email] = [];
+                if (allData[email].indexOf(ciId) === -1) {
+                    allData[email].push(ciId);
+                }
+                localStorage.setItem('molesh_checkins_dismissed', JSON.stringify(allData));
+            } catch(e){}
         }
 
         /* Load check-in on page load */

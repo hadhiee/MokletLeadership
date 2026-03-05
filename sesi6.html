@@ -512,6 +512,7 @@
             if (!user.email || user.email === 'Mode pratinjau') return;
             _ciLoading = true;
             var doneIds = getCheckedInIds();
+            var dismissedIds = getDismissedCheckinIds();
             fetch(MOLESH_CONFIG.APPS_SCRIPT_URL + '?type=activeCheckin')
                 .then(function(r){ return r.json(); })
                 .then(function(data){
@@ -521,6 +522,8 @@
                     if (!data.length) { area.innerHTML = ''; return; }
                     var html = '';
                     data.forEach(function(ci){
+                        /* Skip if already dismissed */
+                        if (dismissedIds.indexOf(ci.id) > -1) return;
                         var tanggal = ci.tanggal;
                         try { var parts = tanggal.split('-'); tanggal = parts[2] + '-' + parts[1] + '-' + parts[0]; } catch(e){}
                         var alreadyDone = doneIds.indexOf(ci.id) > -1;
@@ -583,7 +586,36 @@
                 card.style.opacity = '0';
                 card.style.transform = 'translateX(20px)';
                 setTimeout(function(){ card.remove(); }, 300);
+                /* Save to localStorage so it won't appear again */
+                markCheckinDismissed(ciId);
             }
+        }
+        /* Get/Set dismissed check-in IDs per user */
+        function getDismissedCheckinIds() {
+            var raw = localStorage.getItem('molesh_user');
+            if (!raw) return [];
+            try {
+                var user = JSON.parse(raw);
+                var email = user.email;
+                if (!email || email === 'Mode pratinjau') return [];
+                var allData = JSON.parse(localStorage.getItem('molesh_checkins_dismissed') || '{}');
+                return allData[email] || [];
+            } catch(e){ return []; }
+        }
+        function markCheckinDismissed(ciId) {
+            var raw = localStorage.getItem('molesh_user');
+            if (!raw) return;
+            try {
+                var user = JSON.parse(raw);
+                var email = user.email;
+                if (!email || email === 'Mode pratinjau') return;
+                var allData = JSON.parse(localStorage.getItem('molesh_checkins_dismissed') || '{}');
+                if (!allData[email]) allData[email] = [];
+                if (allData[email].indexOf(ciId) === -1) {
+                    allData[email].push(ciId);
+                }
+                localStorage.setItem('molesh_checkins_dismissed', JSON.stringify(allData));
+            } catch(e){}
         }
         loadActiveCheckin();
 
