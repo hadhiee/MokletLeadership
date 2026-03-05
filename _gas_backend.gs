@@ -24,9 +24,11 @@
  */
 
 var SHEET_NAME = 'Students';
+var CHECKIN_SETTINGS_SHEET = 'CheckIn_Settings';
+var CHECKIN_LOG_SHEET = 'CheckIn_Log';
 var SHEET_ID = '1T0Bu-46xgInjUK1VxE8WeeMJ8V-REsKXET5KdyjWlgo'; // MOLESH Data spreadsheet
 
-/* ── Handle POST (login & saveProfile) ── */
+/* ── Handle POST (login, saveProfile, checkin actions) ── */
 function doPost(e) {
   var lock = LockService.getScriptLock();
   lock.waitLock(10000);
@@ -34,12 +36,17 @@ function doPost(e) {
   try {
     var raw = e.postData.contents;
     var data = JSON.parse(raw);
-    var sheet = getOrCreateSheet();
 
     if (data.action === 'login') {
-      return handleLogin(sheet, data);
+      return handleLogin(getOrCreateSheet(), data);
     } else if (data.action === 'saveProfile') {
-      return handleSaveProfile(sheet, data);
+      return handleSaveProfile(getOrCreateSheet(), data);
+    } else if (data.action === 'saveCheckinSetting') {
+      return handleSaveCheckinSetting(data);
+    } else if (data.action === 'deleteCheckinSetting') {
+      return handleDeleteCheckinSetting(data);
+    } else if (data.action === 'doCheckin') {
+      return handleDoCheckin(data);
     }
 
     return jsonResponse({ error: 'Unknown action' });
@@ -50,12 +57,26 @@ function doPost(e) {
   }
 }
 
-/* ── Handle GET (fetch all students for admin) ── */
+/* ── Handle GET ── */
 function doGet(e) {
-  var sheet = getOrCreateSheet();
+  var type = (e && e.parameter && e.parameter.type) ? e.parameter.type : 'students';
+
+  if (type === 'students') {
+    return getSheetAsJSON(getOrCreateSheet());
+  } else if (type === 'checkinSettings') {
+    return getSheetAsJSON(getOrCreateCheckinSettings());
+  } else if (type === 'checkinLog') {
+    return getSheetAsJSON(getOrCreateCheckinLog());
+  } else if (type === 'activeCheckin') {
+    return getActiveCheckin();
+  }
+  return jsonResponse([]);
+}
+
+/* ── Generic sheet → JSON array ── */
+function getSheetAsJSON(sheet) {
   var data = sheet.getDataRange().getValues();
   if (data.length <= 1) return jsonResponse([]);
-
   var headers = data[0];
   var result = [];
   for (var i = 1; i < data.length; i++) {
@@ -138,4 +159,96 @@ function handleSaveProfile(sheet, data) {
 function jsonResponse(data) {
   return ContentService.createTextOutput(JSON.stringify(data))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ══════════════════════════════════════════════════════
+   CHECK-IN SETTINGS (new sheet)
+   ══════════════════════════════════════════════════════ */
+
+function getOrCreateCheckinSettings() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName(CHECKIN_SETTINGS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(CHECKIN_SETTINGS_SHEET);
+    sheet.appendRow(['id', 'tanggal', 'deskripsi', 'status', 'createdAt']);
+    sheet.setFrozenRows(1);
+    sheet.getRange('A1:E1').setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function getOrCreateCheckinLog() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sheet = ss.getSheetByName(CHECKIN_LOG_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(CHECKIN_LOG_SHEET);
+    sheet.appendRow(['checkinId', 'tanggal', 'deskripsi', 'email', 'googleName', 'nama', 'kelas', 'absen', 'checkinTime']);
+    sheet.setFrozenRows(1);
+    sheet.getRange('A1:I1').setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/* Save a new check-in setting (admin) */
+function handleSaveCheckinSetting(data) {
+  var sheet = getOrCreateCheckinSettings();
+  var id = 'ci_' + new Date().getTime();
+  var now = new Date().toISOString();
+  sheet.appendRow([id, data.tanggal, data.deskripsi || '', data.status || 'aktif', now]);
+  return jsonResponse({ status: 'ok', id: id });
+}
+
+/* Delete a check-in setting (admin) */
+function handleDeleteCheckinSetting(data) {
+  var sheet = getOrCreateCheckinSettings();
+  var ids = sheet.getRange('A:A').getValues().flat();
+  var rowIndex = ids.indexOf(data.id);
+  if (rowIndex > 0) {
+    sheet.deleteRow(rowIndex + 1);
+    return jsonResponse({ status: 'ok' });
+  }
+  return jsonResponse({ error: 'Not found' });
+}
+
+/* Get currently active check-in (for students) */
+function getActiveCheckin() {
+  var sheet = getOrCreateCheckinSettings();
+  var data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return jsonResponse([]);
+  var headers = data[0];
+  var today = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  var active = [];
+  for (var i = 1; i < data.length; i++) {
+    var obj = {};
+    for (var j = 0; j < headers.length; j++) {
+      obj[headers[j]] = data[i][j];
+    }
+    // Format tanggal field if it's a Date object
+    if (obj.tanggal instanceof Date) {
+      obj.tanggal = Utilities.formatDate(obj.tanggal, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+    }
+    if (obj.status === 'aktif' && obj.tanggal === today) {
+      active.push(obj);
+    }
+  }
+  return jsonResponse(active);
+}
+
+/* Student does a check-in */
+function handleDoCheckin(data) {
+  var logSheet = getOrCreateCheckinLog();
+  // Prevent duplicate check-in (same email + checkinId)
+  var logData = logSheet.getDataRange().getValues();
+  for (var i = 1; i < logData.length; i++) {
+    if (logData[i][0] === data.checkinId && logData[i][3] === data.email) {
+      return jsonResponse({ status: 'already', message: 'Kamu sudah check-in untuk sesi ini.' });
+    }
+  }
+  var now = new Date().toISOString();
+  logSheet.appendRow([
+    data.checkinId, data.tanggal || '', data.deskripsi || '',
+    data.email, data.googleName || '', data.nama || '',
+    data.kelas || '', data.absen || '', now
+  ]);
+  return jsonResponse({ status: 'ok' });
 }

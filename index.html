@@ -198,6 +198,27 @@
         }
         .sign-out-btn:hover{background:rgba(244,63,94,.15);color:#fb7185;border-color:rgba(244,63,94,.3)}
 
+        /* Check-in card */
+        .checkin-card{
+            background:linear-gradient(135deg,rgba(34,197,94,.1),rgba(6,182,212,.08));
+            border:1px solid rgba(34,197,94,.2);
+            border-radius:16px;padding:18px 20px;margin-bottom:16px;
+            animation:pop .5s cubic-bezier(.22,1,.36,1) both;
+        }
+        .checkin-card h3{font-size:.95rem;font-weight:700;color:#4ade80;margin-bottom:4px}
+        .checkin-card .ci-meta{font-size:.78rem;color:rgba(255,255,255,.4);margin-bottom:12px}
+        .checkin-btn{
+            width:100%;padding:12px;border:none;border-radius:12px;
+            background:linear-gradient(135deg,#22c55e,#06b6d4);color:#fff;
+            font-family:inherit;font-size:.9rem;font-weight:700;
+            cursor:pointer;transition:all .2s;
+        }
+        .checkin-btn:hover{opacity:.85;transform:translateY(-1px)}
+        .checkin-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+        .checkin-done{
+            text-align:center;padding:10px;font-size:.85rem;font-weight:600;color:#4ade80;
+        }
+
         .dash-card{
             background:rgba(255,255,255,.06);
             backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -327,6 +348,9 @@
             </div>
         </div>
 
+        <!-- Check-In Card (shown when active) -->
+        <div id="checkinArea"></div>
+
         <div class="dash-card">
             <h2>📚 Menu Pembelajaran</h2>
             <p class="dash-subtitle">Pilih sesi untuk memulai. Selesaikan secara berurutan untuk hasil terbaik.</p>
@@ -436,6 +460,9 @@
                     if (profileBtn) profileBtn.parentNode.insertBefore(adminBtn, profileBtn);
                 }
             }
+
+            /* Load active check-ins */
+            setTimeout(function(){ loadActiveCheckin(); }, 200);
         }
 
         /* ── Track login to cloud ── */
@@ -530,6 +557,84 @@
         /* ── Init ── */
         if (!checkSession()) {
             waitForGIS();
+        }
+
+        /* ═══════════════════════════════════════
+           CHECK-IN for students
+           ═══════════════════════════════════════ */
+        function loadActiveCheckin() {
+            if (typeof MOLESH_CONFIG === 'undefined' || MOLESH_CONFIG.APPS_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') return;
+            var raw = localStorage.getItem('molesh_user');
+            if (!raw) return;
+            try { var user = JSON.parse(raw); } catch(e){ return; }
+            if (!user.email || user.email === 'Mode pratinjau') return;
+
+            fetch(MOLESH_CONFIG.APPS_SCRIPT_URL + '?type=activeCheckin')
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    var area = document.getElementById('checkinArea');
+                    if (!area || !data.length) return;
+                    var html = '';
+                    data.forEach(function(ci){
+                        var tanggal = ci.tanggal;
+                        try {
+                            var parts = tanggal.split('-');
+                            var d = new Date(parts[0], parts[1]-1, parts[2]);
+                            tanggal = d.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+                        } catch(e){}
+                        html += '<div class="checkin-card" id="ci_' + ci.id + '">' +
+                            '<h3>\u2705 Check-In Tersedia!</h3>' +
+                            '<div class="ci-meta">' + tanggal + (ci.deskripsi ? ' — ' + ci.deskripsi : '') + '</div>' +
+                            '<button class="checkin-btn" onclick="doCheckin(\'' + ci.id + '\',\'' + (ci.tanggal||'') + '\',\'' + (ci.deskripsi||'').replace(/'/g,"\\'") + '\')">\uD83D\uDCCD Check In Sekarang</button>' +
+                            '</div>';
+                    });
+                    area.innerHTML = html;
+                })
+                .catch(function(){});
+        }
+
+        function doCheckin(ciId, tanggal, deskripsi) {
+            var raw = localStorage.getItem('molesh_user');
+            var profile = localStorage.getItem('molesh_profile');
+            if (!raw) return;
+            try {
+                var user = JSON.parse(raw);
+                var prof = profile ? JSON.parse(profile) : {};
+            } catch(e){ return; }
+
+            var btn = document.querySelector('#ci_' + ciId + ' .checkin-btn');
+            if (btn) { btn.disabled = true; btn.textContent = 'Mengirim...'; }
+
+            var payload = JSON.stringify({
+                action: 'doCheckin',
+                checkinId: ciId,
+                tanggal: tanggal,
+                deskripsi: deskripsi,
+                email: user.email,
+                googleName: user.name || '',
+                nama: prof.nama || '',
+                kelas: prof.kelas || '',
+                absen: prof.absen || ''
+            });
+
+            fetch(MOLESH_CONFIG.APPS_SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain' },
+                body: payload
+            }).then(function(){
+                var card = document.getElementById('ci_' + ciId);
+                if (card) {
+                    card.innerHTML = '<div class="checkin-done">\u2705 Berhasil check-in! Terima kasih.</div>';
+                }
+            }).catch(function(){
+                if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDCCD Check In Sekarang'; }
+                alert('Gagal check-in. Coba lagi nanti.');
+            });
+        }
+
+        /* Load active check-ins when dashboard is visible */
+        if (!dashboard.classList.contains('hidden')) {
+            loadActiveCheckin();
         }
     </script>
 </body>

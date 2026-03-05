@@ -92,6 +92,82 @@
         }
         .refresh-btn:hover{background:rgba(124,58,237,.2);color:#ddd6fe}
 
+        .setting-btn{
+            display:inline-flex;align-items:center;gap:6px;
+            background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.25);
+            border-radius:12px;color:#fbbf24;
+            font-family:inherit;font-size:.82rem;font-weight:600;
+            padding:10px 16px;cursor:pointer;transition:all .2s;
+        }
+        .setting-btn:hover{background:rgba(251,191,36,.2);color:#fde68a}
+
+        /* Tab bar */
+        .tab-bar{display:flex;gap:4px;margin-bottom:16px;background:rgba(255,255,255,.04);border-radius:12px;padding:4px}
+        .tab-btn{
+            flex:1;text-align:center;padding:10px 12px;border-radius:10px;
+            font-family:inherit;font-size:.82rem;font-weight:600;
+            color:rgba(255,255,255,.4);background:transparent;border:none;
+            cursor:pointer;transition:all .2s;
+        }
+        .tab-btn.active{background:rgba(124,58,237,.2);color:#c4b5fd}
+        .tab-btn:hover:not(.active){color:rgba(255,255,255,.6)}
+        .tab-content{display:none}
+        .tab-content.active{display:block}
+
+        /* Modal */
+        .modal-overlay{
+            display:none;position:fixed;inset:0;z-index:100;
+            background:rgba(0,0,0,.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+            justify-content:center;align-items:center;padding:20px;
+        }
+        .modal-overlay.show{display:flex}
+        .modal{
+            background:#1a1a2e;border:1px solid rgba(255,255,255,.12);
+            border-radius:20px;padding:28px 24px;width:100%;max-width:440px;
+            animation:pop .3s cubic-bezier(.22,1,.36,1) both;
+        }
+        .modal h3{font-size:1.1rem;font-weight:800;color:#e2e8f0;margin-bottom:4px}
+        .modal p{font-size:.82rem;color:rgba(255,255,255,.4);margin-bottom:18px}
+        .modal label{display:block;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.5);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+        .modal input,.modal select,.modal textarea{
+            width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+            border-radius:10px;padding:10px 14px;font-family:inherit;font-size:.85rem;
+            color:#e2e8f0;outline:none;margin-bottom:14px;transition:border-color .2s;
+        }
+        .modal input:focus,.modal select:focus,.modal textarea:focus{border-color:rgba(124,58,237,.5)}
+        .modal select option{background:#1a1a2e;color:#e2e8f0}
+        .modal-actions{display:flex;gap:10px;margin-top:6px}
+        .modal-actions button{
+            flex:1;padding:11px;border-radius:10px;font-family:inherit;font-size:.85rem;
+            font-weight:600;cursor:pointer;transition:all .2s;border:none;
+        }
+        .btn-primary{background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff}
+        .btn-primary:hover{opacity:.85}
+        .btn-cancel{background:rgba(255,255,255,.08);color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.1)!important}
+        .btn-cancel:hover{background:rgba(255,255,255,.12);color:#e2e8f0}
+
+        /* Checkin cards */
+        .ci-cards{display:grid;gap:10px;margin-top:12px}
+        .ci-card{
+            display:flex;align-items:center;gap:14px;
+            background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+            border-radius:14px;padding:14px 16px;
+        }
+        .ci-card .ci-date{font-size:.9rem;font-weight:700;color:#e2e8f0;white-space:nowrap}
+        .ci-card .ci-desc{flex:1;font-size:.78rem;color:rgba(255,255,255,.4);min-width:0;overflow:hidden;text-overflow:ellipsis}
+        .ci-card .ci-status{
+            font-size:.68rem;font-weight:700;padding:4px 10px;border-radius:8px;white-space:nowrap;
+        }
+        .ci-status-aktif{background:rgba(34,197,94,.15);color:#4ade80}
+        .ci-status-nonaktif{background:rgba(255,255,255,.06);color:rgba(255,255,255,.3)}
+        .ci-del{
+            background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.2);
+            border-radius:8px;color:#fb7185;font-size:.75rem;font-weight:600;
+            padding:6px 10px;cursor:pointer;transition:all .2s;font-family:inherit;
+        }
+        .ci-del:hover{background:rgba(244,63,94,.2);color:#fda4af}
+        .ci-count{font-size:.72rem;color:rgba(255,255,255,.3);margin-top:2px}
+
         /* Table */
         .table-wrap{
             background:rgba(255,255,255,.06);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
@@ -298,6 +374,14 @@
                 '</div>';
 
             /* Toolbar */
+            /* Tab bar */
+            html += '<div class="tab-bar">' +
+                '<button class="tab-btn active" onclick="switchTab(this,\'tabStudents\')" >📋 Data Siswa</button>' +
+                '<button class="tab-btn" onclick="switchTab(this,\'tabCheckin\')" >📅 Check-In</button>' +
+                '</div>';
+
+            html += '<div id="tabStudents" class="tab-content active">';
+
             html += '<div class="toolbar">' +
                 '<input class="search-input" id="searchInput" type="text" placeholder="🔍 Cari nama atau email..." oninput="filterTable()">' +
                 '<select class="filter-select" id="filterKelas" onchange="filterTable()"><option value="">Semua Kelas</option>';
@@ -319,7 +403,22 @@
             }
 
             html += '</tbody></table></div>';
+            html += '</div>'; /* close tabStudents */
+
+            /* ── Tab: Check-In ── */
+            html += '<div id="tabCheckin" class="tab-content">';
+            html += '<div class="toolbar">' +
+                '<button class="setting-btn" onclick="openCheckinModal()">➕ Tambah Jadwal Check-In</button>' +
+                '<button class="refresh-btn" onclick="loadCheckinData()">🔄 Refresh</button></div>';
+            html += '<div id="ciSettingsList"><div class="empty-state"><div class="empty-icon">⏳</div><p>Memuat jadwal check-in...</p></div></div>';
+            html += '<h3 style="margin-top:24px;font-size:.95rem;color:#e2e8f0">📝 Log Check-In Siswa</h3>';
+            html += '<div id="ciLogWrap" style="margin-top:10px"><div class="empty-state"><div class="empty-icon">⏳</div><p>Memuat log...</p></div></div>';
+            html += '</div>'; /* close tabCheckin */
+
             panel.innerHTML = html;
+
+            /* Auto-load check-in data */
+            loadCheckinData();
         }
 
         function buildRow(s, i) {
@@ -389,10 +488,167 @@
             URL.revokeObjectURL(url);
         }
 
+        /* ── Tab switcher ── */
+        function switchTab(btn, tabId) {
+            document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active')});
+            document.querySelectorAll('.tab-content').forEach(function(t){t.classList.remove('active')});
+            btn.classList.add('active');
+            var tab = document.getElementById(tabId);
+            if (tab) tab.classList.add('active');
+        }
+
+        /* ══════════════════════════════════════
+           CHECK-IN MANAGEMENT
+           ══════════════════════════════════════ */
+        var ciSettings = [];
+        var ciLogs = [];
+
+        function openCheckinModal() {
+            document.getElementById('ciModal').classList.add('show');
+            document.getElementById('ciTanggal').value = new Date().toISOString().slice(0,10);
+            document.getElementById('ciDeskripsi').value = '';
+            document.getElementById('ciStatus').value = 'aktif';
+        }
+        function closeCheckinModal() {
+            document.getElementById('ciModal').classList.remove('show');
+        }
+
+        function saveCheckinSetting() {
+            var tanggal = document.getElementById('ciTanggal').value;
+            var deskripsi = document.getElementById('ciDeskripsi').value;
+            var status = document.getElementById('ciStatus').value;
+            if (!tanggal) { alert('Tanggal wajib diisi!'); return; }
+
+            var payload = JSON.stringify({ action: 'saveCheckinSetting', tanggal: tanggal, deskripsi: deskripsi, status: status });
+            fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: payload })
+                .then(function(){
+                    closeCheckinModal();
+                    /* Wait a moment for GAS to process, then reload */
+                    setTimeout(function(){ loadCheckinData(); }, 1500);
+                })
+                .catch(function(err){ alert('Gagal menyimpan: ' + err.message); });
+        }
+
+        function deleteCheckinSetting(id) {
+            if (!confirm('Yakin hapus jadwal check-in ini?')) return;
+            var payload = JSON.stringify({ action: 'deleteCheckinSetting', id: id });
+            fetch(API_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body: payload })
+                .then(function(){
+                    setTimeout(function(){ loadCheckinData(); }, 1500);
+                })
+                .catch(function(err){ alert('Gagal menghapus: ' + err.message); });
+        }
+
+        function loadCheckinData() {
+            var settingsEl = document.getElementById('ciSettingsList');
+            var logEl = document.getElementById('ciLogWrap');
+            if (!settingsEl) return;
+
+            /* Fetch settings */
+            fetch(API_URL + '?type=checkinSettings')
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    ciSettings = data;
+                    renderCheckinSettings(settingsEl);
+                })
+                .catch(function(){ settingsEl.innerHTML = '<div class="empty-state"><p>❌ Gagal memuat settings</p></div>'; });
+
+            /* Fetch log */
+            fetch(API_URL + '?type=checkinLog')
+                .then(function(r){ return r.json(); })
+                .then(function(data){
+                    ciLogs = data;
+                    renderCheckinLog(logEl);
+                })
+                .catch(function(){ logEl.innerHTML = '<div class="empty-state"><p>❌ Gagal memuat log</p></div>'; });
+        }
+
+        function renderCheckinSettings(el) {
+            if (!ciSettings.length) {
+                el.innerHTML = '<div class="empty-state"><div class="empty-icon">📅</div><p>Belum ada jadwal check-in.</p></div>';
+                return;
+            }
+            /* Count logs per checkinId */
+            var logCount = {};
+            ciLogs.forEach(function(l){ logCount[l.checkinId] = (logCount[l.checkinId]||0)+1; });
+
+            var html = '<div class="ci-cards">';
+            ciSettings.forEach(function(s){
+                var tanggal = s.tanggal;
+                if (tanggal instanceof Date || (typeof tanggal === 'string' && tanggal.indexOf('T') > -1)) {
+                    try { tanggal = new Date(tanggal).toISOString().slice(0,10); } catch(e){}
+                }
+                var statusClass = s.status === 'aktif' ? 'ci-status-aktif' : 'ci-status-nonaktif';
+                var count = logCount[s.id] || 0;
+                html += '<div class="ci-card">' +
+                    '<div><div class="ci-date">' + formatTanggal(tanggal) + '</div>' +
+                    '<div class="ci-count">' + count + ' siswa check-in</div></div>' +
+                    '<div class="ci-desc">' + (s.deskripsi || '—') + '</div>' +
+                    '<span class="ci-status ' + statusClass + '">' + s.status + '</span>' +
+                    '<button class="ci-del" onclick="deleteCheckinSetting(\'' + s.id + '\')">🗑️</button>' +
+                    '</div>';
+            });
+            html += '</div>';
+            el.innerHTML = html;
+        }
+
+        function renderCheckinLog(el) {
+            if (!ciLogs.length) {
+                el.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><p>Belum ada siswa yang check-in.</p></div>';
+                return;
+            }
+            var html = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+                '<th>No</th><th>Tanggal</th><th>Deskripsi</th><th>Nama</th><th>Email</th><th>Kelas</th><th>Absen</th><th>Waktu Check-In</th>' +
+                '</tr></thead><tbody>';
+            ciLogs.forEach(function(l, i){
+                html += '<tr>' +
+                    '<td>' + (i+1) + '</td>' +
+                    '<td style="white-space:nowrap">' + (l.tanggal || '—') + '</td>' +
+                    '<td style="font-size:.75rem;color:rgba(255,255,255,.4)">' + (l.deskripsi || '—') + '</td>' +
+                    '<td><strong>' + (l.nama || l.googleName || '—') + '</strong></td>' +
+                    '<td style="font-size:.75rem;color:rgba(255,255,255,.4)">' + (l.email||'—') + '</td>' +
+                    '<td>' + (l.kelas||'—') + '</td>' +
+                    '<td style="text-align:center">' + (l.absen||'—') + '</td>' +
+                    '<td style="font-size:.72rem;color:rgba(255,255,255,.35)">' + (l.checkinTime ? formatDate(l.checkinTime) : '—') + '</td>' +
+                    '</tr>';
+            });
+            html += '</tbody></table></div>';
+            el.innerHTML = html;
+        }
+
+        function formatTanggal(str) {
+            try {
+                var parts = str.split('-');
+                var d = new Date(parts[0], parts[1]-1, parts[2]);
+                return d.toLocaleDateString('id-ID', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+            } catch(e){ return str; }
+        }
+
         /* ── Init ── */
         if (checkAdmin()) {
             initPanel();
         }
     </script>
+
+    <!-- Check-In Setting Modal -->
+    <div class="modal-overlay" id="ciModal">
+        <div class="modal">
+            <h3>📅 Tambah Jadwal Check-In</h3>
+            <p>Atur tanggal check-in untuk siswa. Siswa hanya bisa check-in pada tanggal yang aktif.</p>
+            <label>Tanggal</label>
+            <input type="date" id="ciTanggal">
+            <label>Deskripsi (opsional)</label>
+            <input type="text" id="ciDeskripsi" placeholder="Misal: Pertemuan Sesi 1">
+            <label>Status</label>
+            <select id="ciStatus">
+                <option value="aktif">✅ Aktif</option>
+                <option value="nonaktif">⏸️ Nonaktif</option>
+            </select>
+            <div class="modal-actions">
+                <button class="btn-cancel" onclick="closeCheckinModal()">Batal</button>
+                <button class="btn-primary" onclick="saveCheckinSetting()">💾 Simpan</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
